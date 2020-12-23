@@ -1,12 +1,34 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import { BrowserRouter, Route, Link, useHistory } from "react-router-dom";
+// import "./index.css";
+import {
+  createMuiTheme,
+  makeStyles,
+  ThemeProvider,
+} from "@material-ui/core/styles";
+import { blueGrey, orange } from "@material-ui/core/colors";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import App from "./components/app";
 import reportWebVitals from "./reportWebVitals";
 
+import "fontsource-roboto";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: blueGrey,
+    secondary: orange,
+  },
+});
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

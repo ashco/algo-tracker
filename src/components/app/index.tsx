@@ -1,6 +1,17 @@
 import React from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { BrowserRouter, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  Link,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
+
+import Amplify, { Auth } from "aws-amplify";
+import awsexports from "../../aws-exports";
+import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 
 import {
   createMuiTheme,
@@ -8,7 +19,7 @@ import {
   ThemeProvider,
 } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
+
 import AppBar from "@material-ui/core/AppBar";
 import { blueGrey, orange } from "@material-ui/core/colors";
 import IconButton from "@material-ui/core/IconButton";
@@ -23,21 +34,30 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
+import TimelineIcon from "@material-ui/icons/Timeline";
 import MailIcon from "@material-ui/icons/Mail";
+import BottomNavigation from "@material-ui/core/BottomNavigation";
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+import RestoreIcon from "@material-ui/icons/Restore";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import Home from "../home";
 import Form from "../form";
+import AuthForm from "../auth";
+import Analytics from "../analytics";
+import History from "../history";
 
-import logo from "./logo.svg";
 import "./App.css";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: blueGrey,
-    secondary: orange,
-  },
-});
+Amplify.configure(awsexports);
+
+// const theme = createMuiTheme({
+//   palette: {
+//     primary: blueGrey,
+//     secondary: orange,
+//   },
+// });
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,6 +65,11 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
+  },
+  bottomNav: {
+    bottom: 0,
+    position: "fixed",
+    width: "100vw",
   },
   title: {
     flexGrow: 1,
@@ -65,85 +90,175 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
 
-  const [isNavOpen, setIsNavOpen] = React.useState(false);
+  // const [isNavOpen, setIsNavOpen] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const history = useHistory();
+  const location = useLocation();
 
-  const toggleDrawer = (isOpen: boolean) => (
-    event: React.KeyboardEvent | React.MouseEvent
-  ) => {
-    if (
-      event.type === "keydown" &&
-      ((event as React.KeyboardEvent).key === "Tab" ||
-        (event as React.KeyboardEvent).key === "Shift")
-    ) {
-      return;
+  // const toggleDrawer = (isOpen: boolean) => (
+  //   event: React.KeyboardEvent | React.MouseEvent
+  // ) => {
+  //   if (
+  //     event.type === "keydown" &&
+  //     ((event as React.KeyboardEvent).key === "Tab" ||
+  //       (event as React.KeyboardEvent).key === "Shift")
+  //   ) {
+  //     return;
+  //   }
+
+  //   setIsNavOpen(isOpen);
+  // };
+
+  // const list = () => (
+  //   <div
+  //     className={classes.list}
+  //     role="presentation"
+  //     onClick={toggleDrawer(false)}
+  //     onKeyDown={toggleDrawer(false)}
+  //   >
+  //     <List>
+  //       {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+  //         <ListItem button key={text}>
+  //           <ListItemIcon>
+  //             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+  //           </ListItemIcon>
+  //           <ListItemText primary={text} />
+  //         </ListItem>
+  //       ))}
+  //     </List>
+  //     <Divider />
+  //     <List>
+  //       {["All mail", "Trash", "Spam"].map((text, index) => (
+  //         <ListItem button key={text}>
+  //           <ListItemIcon>
+  //             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+  //           </ListItemIcon>
+  //           <ListItemText primary={text} />
+  //         </ListItem>
+  //       ))}
+  //     </List>
+  //   </div>
+  // );
+
+  // async function signIn() {
+  //   try {
+  //     const user = await Auth.signIn(username, password);
+  //   } catch (error) {
+  //     console.log("error signing in", error);
+  //   }
+  // }
+
+  async function signOut() {
+    try {
+      await Auth.signOut();
+      console.log("Signed out");
+    } catch (error) {
+      console.log("error signing out: ", error);
     }
+  }
 
-    setIsNavOpen(isOpen);
-  };
+  // React.useEffect(() => {
+  //   async function getUserInfo() {
+  //     try {
+  //       const user = await Auth.currentAuthenticatedUser();
+  //       const {
+  //         signInUserSession: {
+  //           idToken: { payload },
+  //         },
+  //       } = user;
+  //       if (
+  //         payload["cognito:groups"] &&
+  //         payload["cognito:groups"].includes("Admin")
+  //       ) {
+  //         setIsAdmin(true);
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
 
-  const list = () => (
-    <div
-      className={classes.list}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-      <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  //   getUserInfo();
+  // }, []);
+
+  const [navVal, setNavVal] = React.useState<null | 0 | 1>(null);
+
+  React.useEffect(() => {
+    if (location.pathname === "/history") {
+      setNavVal(0);
+    } else if (location.pathname === "/analytics") {
+      setNavVal(1);
+    } else {
+      setNavVal(null);
+    }
+  }, [location]);
 
   return (
     <HelmetProvider>
-      <ThemeProvider theme={theme}>
-        <div className="App">
-          <CssBaseline />
-          <Helmet>
-            <title>Algo Tracker</title>
-            <meta
-              name="viewport"
-              content="minimum-scale=1, initial-scale=1, width=device-width"
-            />
-          </Helmet>
-          <Drawer anchor="left" open={isNavOpen} onClose={toggleDrawer(false)}>
-            {list()}
-          </Drawer>
-          <AppBar position="static" color="primary">
-            <Toolbar>
-              <IconButton
-                edge="start"
-                className={classes.menuButton}
-                color="inherit"
-                aria-label="menu"
-                onClick={toggleDrawer(true)}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" className={classes.title}>
-                Algo Tracker
-              </Typography>
-              <Button color="inherit">Admin</Button>
-            </Toolbar>
-          </AppBar>
+      <div className="App">
+        <Helmet>
+          <title>Algo Tracker</title>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
+          />
+        </Helmet>
+        {/* <Drawer anchor="left" open={isNavOpen} onClose={toggleDrawer(false)}>
+          {list()}
+        </Drawer> */}
+        <AppBar position="static">
+          <Toolbar>
+            {/* <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="menu"
+              onClick={toggleDrawer(true)}
+            >
+              <MenuIcon />
+            </IconButton> */}
+            <Typography variant="h6" className={classes.title}>
+              Algo Tracker
+            </Typography>
+            <Button color="inherit" onClick={() => history.push("/auth")}>
+              Sign In
+            </Button>
+            {/* {user ? (
+              <Button color="inherit" onClick={signOut}>
+                Sign Out
+              </Button>
+            ) : (
+              <Button color="inherit" onClick={signIn}>
+                Sign In
+              </Button>
+            )} */}
+          </Toolbar>
+        </AppBar>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/auth" component={AuthForm} />
+          <Route exact path="/history" component={History} />
+          <Route exact path="/analytics" component={Analytics} />
+        </Switch>
+        <BottomNavigation
+          value={navVal}
+          // onChange={(event, newValue) => {
+          //   setNavVal(newValue);
+          // }}
+          showLabels
+          className={classes.bottomNav}
+        >
+          <BottomNavigationAction
+            onClick={() => history.push("/history")}
+            label="History"
+            icon={<RestoreIcon />}
+          />
+          <BottomNavigationAction
+            onClick={() => history.push("/analytics")}
+            label="Analytics"
+            icon={<TimelineIcon />}
+          />
+        </BottomNavigation>
+        {isAdmin && (
           <Fab
             size="large"
             color="secondary"
@@ -152,12 +267,8 @@ function App() {
           >
             <AddIcon />
           </Fab>
-          <BrowserRouter>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/admin/post" component={Form} />
-          </BrowserRouter>
-        </div>
-      </ThemeProvider>
+        )}
+      </div>
     </HelmetProvider>
   );
 }
