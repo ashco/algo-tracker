@@ -219,9 +219,11 @@ function App() {
             <Typography variant="h6" className={classes.title}>
               Algo Tracker
             </Typography>
-            <Button color="inherit" onClick={() => history.push("/auth")}>
-              Sign In
-            </Button>
+            {location.pathname !== "/auth" && (
+              <Button color="inherit" onClick={() => history.push("/auth")}>
+                Sign In
+              </Button>
+            )}
             {/* {user ? (
               <Button color="inherit" onClick={signOut}>
                 Sign Out
