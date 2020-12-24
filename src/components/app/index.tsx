@@ -1,58 +1,36 @@
 import React from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import {
-  BrowserRouter,
-  Route,
-  Switch,
-  Link,
-  useHistory,
-  useLocation,
-} from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 
 import Amplify, { Auth } from "aws-amplify";
 import awsexports from "../../aws-exports";
-import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 
-import {
-  createMuiTheme,
-  makeStyles,
-  ThemeProvider,
-} from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
+import { makeStyles } from "@material-ui/core/styles";
 
 import AppBar from "@material-ui/core/AppBar";
-import { blueGrey, orange } from "@material-ui/core/colors";
-import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import MenuIcon from "@material-ui/icons/Menu";
 import Toolbar from "@material-ui/core/Toolbar";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import TimelineIcon from "@material-ui/icons/Timeline";
-import MailIcon from "@material-ui/icons/Mail";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import RestoreIcon from "@material-ui/icons/Restore";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import MuiAlert from "@material-ui/lab/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
 
 import withAlerts from "../../context/withAlerts";
 
 import Home from "../home";
-import Form from "../form";
-import AuthForm from "../auth";
+// import AuthForm from "../auth";
 import Analytics from "../analytics";
 import History from "../history";
 
 import "./App.css";
+import SignIn from "../auth/signIn";
+import SignUp from "../auth/signUp";
+import ConfirmSignUp from "../auth/confirmSignUp";
+import ForgotPassword from "../auth/forgotPassword";
+import ForgotPasswordSubmit from "../auth/forgotPasswordSubmit";
 
 Amplify.configure(awsexports);
 
@@ -134,18 +112,26 @@ function App() {
             <Typography variant="h6" className={classes.title}>
               Algo Tracker
             </Typography>
-            {location.pathname !== "/auth" && (
-              <Button color="inherit" onClick={() => history.push("/auth")}>
-                Sign In
+            {
+              <Button color="inherit" onClick={() => history.push("/sign-in")}>
+                Admin
               </Button>
-            )}
+            }
           </Toolbar>
         </AppBar>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/auth" component={AuthForm} />
           <Route exact path="/history" component={History} />
           <Route exact path="/analytics" component={Analytics} />
+          <Route exact path="/sign-in" component={SignIn} />
+          <Route exact path="/sign-up" component={SignUp} />
+          <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
+          <Route exact path="/forgot-password" component={ForgotPassword} />
+          <Route
+            exact
+            path="/forgot-password-submit"
+            component={ForgotPasswordSubmit}
+          />
         </Switch>
         <BottomNavigation
           value={navVal}
