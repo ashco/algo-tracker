@@ -5,14 +5,23 @@ import Snackbar from "@material-ui/core/Snackbar";
 
 export const AlertContext = React.createContext<any>(null);
 
-const initialAlert = {
+type Status = "error" | "warning" | "info" | "success";
+
+interface Alert {
+  text: string;
+  status: Status | undefined;
+  isOpen: boolean;
+  duration: number;
+}
+
+const initialAlert: Alert = {
   text: "",
   status: "error",
   isOpen: false,
   duration: 6000,
 };
 
-const withAlert = (Component: any) => {
+const withAlerts = (Component: any) => {
   const WithAlert = (props: any) => {
     const [alert, setAlert] = React.useState(initialAlert);
 
@@ -23,7 +32,8 @@ const withAlert = (Component: any) => {
       if (reason === "clickaway") {
         return;
       }
-      setAlert(initialAlert);
+      setAlert({ ...alert, isOpen: false });
+      // setAlert(initialAlert);
     };
 
     const triggerAlert = (text: string) => {
@@ -58,4 +68,4 @@ const withAlert = (Component: any) => {
   return WithAlert;
 };
 
-export default withAlert;
+export default withAlerts;

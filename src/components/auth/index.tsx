@@ -14,8 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 
-// import useAlert from "../../hooks/useAlert";
-import { AlertContext } from "../../context/withAlert";
+import { AlertContext } from "../../context/withAlerts";
 
 import { Auth } from "aws-amplify";
 

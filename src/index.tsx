@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Link, useHistory } from "react-router-dom";
-// import "./index.css";
 import {
   createMuiTheme,
   makeStyles,
@@ -13,8 +12,6 @@ import App from "./components/app";
 import reportWebVitals from "./reportWebVitals";
 
 import "fontsource-roboto";
-import AlertContext from "./context/AlertContext";
-import useAlert from "./hooks/useAlert";
 
 const theme = createMuiTheme({
   palette: {
@@ -27,12 +24,8 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        {/* <AlertContext.Provider value={() => useAlert()}> */}
-        {/* <AlertContext.Provider value={() => useAlert()}> */}
-
         <CssBaseline />
         <App />
-        {/* </AlertContext.Provider> */}
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,

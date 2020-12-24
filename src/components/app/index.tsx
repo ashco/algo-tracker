@@ -44,11 +44,7 @@ import LocationOnIcon from "@material-ui/icons/LocationOn";
 import MuiAlert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 
-// import AlertContext from "../../context/AlertContext";
-// import withAlert, { AlertContext } from "../alert";
-import withAlert from "../../context/withAlert";
-
-import PopContext from "../../context/PopContext";
+import withAlerts from "../../context/withAlerts";
 
 import Home from "../home";
 import Form from "../form";
@@ -98,63 +94,9 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
 
-  // const [isNavOpen, setIsNavOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const history = useHistory();
   const location = useLocation();
-
-  // const toggleDrawer = (isOpen: boolean) => (
-  //   event: React.KeyboardEvent | React.MouseEvent
-  // ) => {
-  //   if (
-  //     event.type === "keydown" &&
-  //     ((event as React.KeyboardEvent).key === "Tab" ||
-  //       (event as React.KeyboardEvent).key === "Shift")
-  //   ) {
-  //     return;
-  //   }
-
-  //   setIsNavOpen(isOpen);
-  // };
-
-  // const list = () => (
-  //   <div
-  //     className={classes.list}
-  //     role="presentation"
-  //     onClick={toggleDrawer(false)}
-  //     onKeyDown={toggleDrawer(false)}
-  //   >
-  //     <List>
-  //       {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-  //         <ListItem button key={text}>
-  //           <ListItemIcon>
-  //             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-  //           </ListItemIcon>
-  //           <ListItemText primary={text} />
-  //         </ListItem>
-  //       ))}
-  //     </List>
-  //     <Divider />
-  //     <List>
-  //       {["All mail", "Trash", "Spam"].map((text, index) => (
-  //         <ListItem button key={text}>
-  //           <ListItemIcon>
-  //             {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-  //           </ListItemIcon>
-  //           <ListItemText primary={text} />
-  //         </ListItem>
-  //       ))}
-  //     </List>
-  //   </div>
-  // );
-
-  // async function signIn() {
-  //   try {
-  //     const user = await Auth.signIn(username, password);
-  //   } catch (error) {
-  //     console.log("error signing in", error);
-  //   }
-  // }
 
   async function signOut() {
     try {
@@ -164,29 +106,6 @@ function App() {
       console.log("error signing out: ", error);
     }
   }
-
-  // React.useEffect(() => {
-  //   async function getUserInfo() {
-  //     try {
-  //       const user = await Auth.currentAuthenticatedUser();
-  //       const {
-  //         signInUserSession: {
-  //           idToken: { payload },
-  //         },
-  //       } = user;
-  //       if (
-  //         payload["cognito:groups"] &&
-  //         payload["cognito:groups"].includes("Admin")
-  //       ) {
-  //         setIsAdmin(true);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-
-  //   getUserInfo();
-  // }, []);
 
   const [navVal, setNavVal] = React.useState<null | 0 | 1>(null);
 
@@ -200,90 +119,64 @@ function App() {
     }
   }, [location]);
 
-  // const alert = React.useState("s");
-  const [state, setState] = React.useState(false);
-
   return (
-    <PopContext.Provider value={{ state, setState }}>
-      <HelmetProvider>
-        <div className="App">
-          {/* <AlertContext.Provider value={alert}> */}
-          <Helmet>
-            <title>Algo Tracker</title>
-            <meta
-              name="viewport"
-              content="minimum-scale=1, initial-scale=1, width=device-width"
-            />
-          </Helmet>
-          {/* <Alert /> */}
-          {/* <Snackbar
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={alert.isOpen}
-            autoHideDuration={alert.duration}
-            onClose={handleClose}
-          >
-            <MuiAlert
-              elevation={6}
-              variant="filled"
-              severity={alert.status}
-              onClose={handleClose}
-            >
-              {alert.text}
-            </MuiAlert>
-          </Snackbar> */}
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" className={classes.title}>
-                Algo Tracker
-              </Typography>
-              {location.pathname !== "/auth" && (
-                <Button color="inherit" onClick={() => history.push("/auth")}>
-                  Sign In
-                </Button>
-              )}
-            </Toolbar>
-          </AppBar>
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/auth" component={AuthForm} />
-            <Route exact path="/history" component={History} />
-            <Route exact path="/analytics" component={Analytics} />
-          </Switch>
-          <BottomNavigation
-            value={navVal}
-            showLabels
-            className={classes.bottomNav}
-          >
-            <BottomNavigationAction
-              onClick={() => history.push("/history")}
-              label="History"
-              icon={<RestoreIcon />}
-            />
-            <BottomNavigationAction
-              onClick={() => history.push("/analytics")}
-              label="Analytics"
-              icon={<TimelineIcon />}
-            />
-          </BottomNavigation>
+    <HelmetProvider>
+      <div className="App">
+        <Helmet>
+          <title>Algo Tracker</title>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
+          />
+        </Helmet>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" className={classes.title}>
+              Algo Tracker
+            </Typography>
+            {location.pathname !== "/auth" && (
+              <Button color="inherit" onClick={() => history.push("/auth")}>
+                Sign In
+              </Button>
+            )}
+          </Toolbar>
+        </AppBar>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/auth" component={AuthForm} />
+          <Route exact path="/history" component={History} />
+          <Route exact path="/analytics" component={Analytics} />
+        </Switch>
+        <BottomNavigation
+          value={navVal}
+          showLabels
+          className={classes.bottomNav}
+        >
+          <BottomNavigationAction
+            onClick={() => history.push("/history")}
+            label="History"
+            icon={<RestoreIcon />}
+          />
+          <BottomNavigationAction
+            onClick={() => history.push("/analytics")}
+            label="Analytics"
+            icon={<TimelineIcon />}
+          />
+        </BottomNavigation>
 
-          {isAdmin && (
-            <Fab
-              size="large"
-              color="secondary"
-              aria-label="add"
-              className={classes.fab}
-            >
-              <AddIcon />
-            </Fab>
-          )}
-          {/* </AlertContext.Provider> */}
-        </div>
-      </HelmetProvider>
-    </PopContext.Provider>
+        {isAdmin && (
+          <Fab
+            size="large"
+            color="secondary"
+            aria-label="add"
+            className={classes.fab}
+          >
+            <AddIcon />
+          </Fab>
+        )}
+      </div>
+    </HelmetProvider>
   );
 }
 
-export default withAlert(App);
+export default withAlerts(App);
