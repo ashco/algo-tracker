@@ -1,28 +1,34 @@
 {
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-algotracker-dev-123620-authRole",
-      "UnauthRoleArn": "arn:aws:iam::105465043081:role/amplify-algotracker-dev-123620-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::105465043081:role/amplify-algotracker-dev-123620-authRole",
-      "Region": "us-west-2",
-      "DeploymentBucketName": "amplify-algotracker-dev-123620-deployment",
-      "UnauthRoleName": "amplify-algotracker-dev-123620-unauthRole",
-      "StackName": "amplify-algotracker-dev-123620",
-      "StackId": "arn:aws:cloudformation:us-west-2:105465043081:stack/amplify-algotracker-dev-123620/5b85bfc0-4495-11eb-bf43-0284e0137487",
-      "AmplifyAppId": "d26webzsk9f9ch"
-    },
-    "categories": {
-      "function": {
-        "algotracker85b930e8PostConfirmation": {
-          "GROUP": "Admin"
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-algotracker-dev-123620-authRole",
+            "UnauthRoleArn": "arn:aws:iam::105465043081:role/amplify-algotracker-dev-123620-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::105465043081:role/amplify-algotracker-dev-123620-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-algotracker-dev-123620-deployment",
+            "UnauthRoleName": "amplify-algotracker-dev-123620-unauthRole",
+            "StackName": "amplify-algotracker-dev-123620",
+            "StackId": "arn:aws:cloudformation:us-west-2:105465043081:stack/amplify-algotracker-dev-123620/5b85bfc0-4495-11eb-bf43-0284e0137487",
+            "AmplifyAppId": "d26webzsk9f9ch"
         },
-        "algotracker85b930e8PreSignup": {
-          "DOMAINWHITELIST": "ashco.io"
+        "categories": {
+            "function": {
+                "algotracker85b930e8PostConfirmation": {
+                    "GROUP": "Admin"
+                },
+                "algotracker85b930e8PreSignup": {
+                    "DOMAINWHITELIST": "ashco.io"
+                }
+            },
+            "auth": {
+                "algotracker85b930e8": {}
+            },
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d26webzsk9f9ch",
+                    "type": "cicd"
+                }
+            }
         }
-      },
-      "auth": {
-        "algotracker85b930e8": {}
-      }
     }
-  }
 }
