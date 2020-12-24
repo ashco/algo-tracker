@@ -13,9 +13,10 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-
-// import useAlert from "../../hooks/useAlert";
-import { AlertContext } from "../../context/withAlert";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 import { Auth } from "aws-amplify";
 
@@ -73,21 +74,31 @@ function Copyright() {
   );
 }
 
-const AuthPage: React.FC = () => {
+const ForgotPassword: React.FC = () => {
   const [formState, setFormState] = React.useState<FormState>(FormState.signIn);
   const [form, setForm] = React.useState<Form>(initialForm);
 
+  const [isSnackbarOpen, setIsSnackbarOpen] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("");
+
   const classes = useStyles();
-
-  // const [alert, dispatch]: any = useAlert();
-
-  const triggerAlert = React.useContext(AlertContext);
-  // const { state, setState } = React.useContext(PopContext);
 
   const handleChange = (
     e: React.FormEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     setForm({ ...form, [e.currentTarget.name]: e.currentTarget.value });
+  };
+
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | React.MouseEvent,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setIsSnackbarOpen(false);
+    setErrorMsg("");
   };
 
   async function signIn(e: React.SyntheticEvent) {
@@ -98,8 +109,8 @@ const AuthPage: React.FC = () => {
       setFormState(FormState.signedIn);
     } catch (err) {
       console.log({ ...err });
-      // dispatch({ type: "error", text: err.log || err.message });
-      triggerAlert(err.log || err.message);
+      setErrorMsg(err.log || err.message);
+      setIsSnackbarOpen(true);
     }
   }
 
@@ -116,8 +127,8 @@ const AuthPage: React.FC = () => {
       /* Once the user successfully signs up, update form state to show the confirm sign up form for MFA */
       setFormState(FormState.confirmSignUp);
     } catch (err) {
-      // setErrorMsg(err.log || err.message);
-      // setIsSnackbarOpen(true);
+      setErrorMsg(err.log || err.message);
+      setIsSnackbarOpen(true);
     }
   }
 
@@ -128,8 +139,8 @@ const AuthPage: React.FC = () => {
       /* Once the user successfully confirms their account, update form state to show the sign in form */
       setFormState(FormState.signIn);
     } catch (err) {
-      // setErrorMsg(err.log || err.message);
-      // setIsSnackbarOpen(true);
+      setErrorMsg(err.log || err.message);
+      setIsSnackbarOpen(true);
     }
   }
 
@@ -351,7 +362,30 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  return <div>{renderAuthForm(formState)}</div>;
+  return (
+    <div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity="error"
+          onClose={handleSnackbarClose}
+        >
+          {errorMsg}
+        </MuiAlert>
+      </Snackbar>
+
+      {renderAuthForm(formState)}
+    </div>
+  );
 };
 
-export default AuthPage;
+export default ForgotPassword;

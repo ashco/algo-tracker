@@ -41,6 +41,14 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import RestoreIcon from "@material-ui/icons/Restore";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
+
+// import AlertContext from "../../context/AlertContext";
+// import withAlert, { AlertContext } from "../alert";
+import withAlert from "../../context/withAlert";
+
+import PopContext from "../../context/PopContext";
 
 import Home from "../home";
 import Form from "../form";
@@ -192,87 +200,90 @@ function App() {
     }
   }, [location]);
 
+  // const alert = React.useState("s");
+  const [state, setState] = React.useState(false);
+
   return (
-    <HelmetProvider>
-      <div className="App">
-        <Helmet>
-          <title>Algo Tracker</title>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
-          />
-        </Helmet>
-        {/* <Drawer anchor="left" open={isNavOpen} onClose={toggleDrawer(false)}>
-          {list()}
-        </Drawer> */}
-        <AppBar position="static">
-          <Toolbar>
-            {/* <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
-              onClick={toggleDrawer(true)}
-            >
-              <MenuIcon />
-            </IconButton> */}
-            <Typography variant="h6" className={classes.title}>
-              Algo Tracker
-            </Typography>
-            {location.pathname !== "/auth" && (
-              <Button color="inherit" onClick={() => history.push("/auth")}>
-                Sign In
-              </Button>
-            )}
-            {/* {user ? (
-              <Button color="inherit" onClick={signOut}>
-                Sign Out
-              </Button>
-            ) : (
-              <Button color="inherit" onClick={signIn}>
-                Sign In
-              </Button>
-            )} */}
-          </Toolbar>
-        </AppBar>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/auth" component={AuthForm} />
-          <Route exact path="/history" component={History} />
-          <Route exact path="/analytics" component={Analytics} />
-        </Switch>
-        <BottomNavigation
-          value={navVal}
-          // onChange={(event, newValue) => {
-          //   setNavVal(newValue);
-          // }}
-          showLabels
-          className={classes.bottomNav}
-        >
-          <BottomNavigationAction
-            onClick={() => history.push("/history")}
-            label="History"
-            icon={<RestoreIcon />}
-          />
-          <BottomNavigationAction
-            onClick={() => history.push("/analytics")}
-            label="Analytics"
-            icon={<TimelineIcon />}
-          />
-        </BottomNavigation>
-        {isAdmin && (
-          <Fab
-            size="large"
-            color="secondary"
-            aria-label="add"
-            className={classes.fab}
+    <PopContext.Provider value={{ state, setState }}>
+      <HelmetProvider>
+        <div className="App">
+          {/* <AlertContext.Provider value={alert}> */}
+          <Helmet>
+            <title>Algo Tracker</title>
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width"
+            />
+          </Helmet>
+          {/* <Alert /> */}
+          {/* <Snackbar
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={alert.isOpen}
+            autoHideDuration={alert.duration}
+            onClose={handleClose}
           >
-            <AddIcon />
-          </Fab>
-        )}
-      </div>
-    </HelmetProvider>
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={alert.status}
+              onClose={handleClose}
+            >
+              {alert.text}
+            </MuiAlert>
+          </Snackbar> */}
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" className={classes.title}>
+                Algo Tracker
+              </Typography>
+              {location.pathname !== "/auth" && (
+                <Button color="inherit" onClick={() => history.push("/auth")}>
+                  Sign In
+                </Button>
+              )}
+            </Toolbar>
+          </AppBar>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/auth" component={AuthForm} />
+            <Route exact path="/history" component={History} />
+            <Route exact path="/analytics" component={Analytics} />
+          </Switch>
+          <BottomNavigation
+            value={navVal}
+            showLabels
+            className={classes.bottomNav}
+          >
+            <BottomNavigationAction
+              onClick={() => history.push("/history")}
+              label="History"
+              icon={<RestoreIcon />}
+            />
+            <BottomNavigationAction
+              onClick={() => history.push("/analytics")}
+              label="Analytics"
+              icon={<TimelineIcon />}
+            />
+          </BottomNavigation>
+
+          {isAdmin && (
+            <Fab
+              size="large"
+              color="secondary"
+              aria-label="add"
+              className={classes.fab}
+            >
+              <AddIcon />
+            </Fab>
+          )}
+          {/* </AlertContext.Provider> */}
+        </div>
+      </HelmetProvider>
+    </PopContext.Provider>
   );
 }
 
-export default App;
+export default withAlert(App);
