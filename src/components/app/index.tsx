@@ -2,7 +2,7 @@ import React from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 
-import Amplify, { Auth } from "aws-amplify";
+import Amplify, { Hub, Auth } from "aws-amplify";
 import awsexports from "../../aws-exports";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,12 +19,12 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import RestoreIcon from "@material-ui/icons/Restore";
 
 import withAlerts from "../../context/withAlerts";
+import { AlertContext } from "../../context/withAlerts";
 
 import Home from "../home";
 // import AuthForm from "../auth";
 import Analytics from "../analytics";
 import History from "../history";
-
 import "./App.css";
 import SignIn from "../auth/signIn";
 import SignUp from "../auth/signUp";
@@ -70,22 +70,40 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
-  const classes = useStyles();
+  const triggerAlert = React.useContext(AlertContext);
 
-  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [user, setUser] = React.useState(null);
+  const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
 
   async function signOut() {
     try {
       await Auth.signOut();
-      console.log("Signed out");
-    } catch (error) {
-      console.log("error signing out: ", error);
+      setUser(null);
+    } catch (err) {
+      triggerAlert(err.log || err.message);
+      console.log("error signing out: ", err);
     }
   }
 
   const [navVal, setNavVal] = React.useState<null | 0 | 1>(null);
+
+  React.useEffect(() => {
+    async function updateUser() {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        setUser(user);
+      } catch (err) {
+        setUser(null);
+      }
+    }
+
+    updateUser();
+
+    Hub.listen("auth", updateUser);
+    return () => Hub.remove("auth", updateUser);
+  }, []);
 
   React.useEffect(() => {
     if (location.pathname === "/history") {
@@ -112,11 +130,15 @@ function App() {
             <Typography variant="h6" className={classes.title}>
               Algo Tracker
             </Typography>
-            {
+            {user === null ? (
               <Button color="inherit" onClick={() => history.push("/sign-in")}>
                 Admin
               </Button>
-            }
+            ) : (
+              <Button color="inherit" onClick={signOut}>
+                Sign Out
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
         <Switch>
@@ -150,7 +172,7 @@ function App() {
           />
         </BottomNavigation>
 
-        {isAdmin && (
+        {user && (
           <Fab
             size="large"
             color="secondary"
