@@ -24,10 +24,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
-  // cardGrid: {
-  //   paddingTop: theme.spacing(4),
-  //   paddingBottom: theme.spacing(10),
-  // },
+  cardGrid: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(10),
+  },
   cardContent: {
     paddingBottom: 8,
     // display: "grid",
@@ -103,7 +103,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
   const history = useHistory();
 
   return (
-    <>
+    <Container className={classes.cardGrid} maxWidth="md">
       <Grid container spacing={4}>
         {cards.map((card) => (
           <Grid item key={card} xs={12} md={6}>
@@ -138,7 +138,12 @@ const History: React.FC<{ user: any }> = ({ user }) => {
                 </div>
               </CardContent>
               <CardActions className={classes.cardActions}>
-                <Button size="small" variant="contained" color="primary">
+                <Button
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                >
                   View
                 </Button>
                 <Button size="small" color="primary">
@@ -157,7 +162,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
       >
         <AddIcon />
       </Fab>
-    </>
+    </Container>
   );
 };
 

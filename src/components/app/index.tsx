@@ -73,10 +73,10 @@ const useStyles = makeStyles((theme) => ({
     left: "auto",
     position: "fixed",
   },
-  cardGrid: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(10),
-  },
+  // cardGrid: {
+  //   paddingTop: theme.spacing(4),
+  //   paddingBottom: theme.spacing(10),
+  // },
 }));
 
 function App() {
@@ -152,28 +152,27 @@ function App() {
           </Toolbar>
         </AppBar>
         <main>
-          <Container className={classes.cardGrid} maxWidth="md">
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route exact path="/history">
-                <History user={user} />
-              </Route>
-              <Route exact path="/form">
-                <Form />
-              </Route>
-              <Route exact path="/analytics" component={Analytics} />
-              {/* Auth */}
-              <Route exact path="/sign-in" component={SignIn} />
-              <Route exact path="/sign-up" component={SignUp} />
-              <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
-              <Route exact path="/forgot-password" component={ForgotPassword} />
-              <Route
-                exact
-                path="/forgot-password-submit"
-                component={ForgotPasswordSubmit}
-              />
-            </Switch>
-          </Container>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/history">
+              <History user={user} />
+            </Route>
+            <Route exact path="/form">
+              <Form />
+            </Route>
+            <Route exact path="/analytics" component={Analytics} />
+            {/* Auth */}
+            <Route exact path="/sign-in" component={SignIn} />
+            <Route exact path="/sign-up" component={SignUp} />
+            <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
+            <Route exact path="/forgot-password" component={ForgotPassword} />
+            <Route
+              exact
+              path="/forgot-password-submit"
+              component={ForgotPasswordSubmit}
+            />
+          </Switch>
+          {/* </Container> */}
         </main>
         <BottomNavigation
           value={navVal}

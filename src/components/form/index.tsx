@@ -7,6 +7,8 @@ import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Paper from "@material-ui/core/Paper";
+import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -38,10 +40,18 @@ const useStyles = makeStyles((theme) => ({
   buttons: {
     display: "flex",
     justifyContent: "flex-end",
+    width: "100%",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
   },
   button: {
     marginTop: theme.spacing(3),
     marginLeft: theme.spacing(1),
+  },
+  cardGrid: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(10),
   },
 }));
 
@@ -49,33 +59,31 @@ export default function AddressForm() {
   const classes = useStyles();
 
   return (
-    <Paper className={classes.paper}>
-      <React.Fragment>
-        <Typography variant="h6" gutterBottom>
-          Shipping address
+    <Container className={classes.cardGrid} maxWidth="sm">
+      <Paper className={classes.paper}>
+        <Typography variant="h5" gutterBottom>
+          New Problem
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               required
-              id="firstName"
-              name="firstName"
-              label="First name"
+              id="title"
+              name="title"
+              label="Problem Title"
               fullWidth
-              autoComplete="given-name"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              id="lastName"
-              name="lastName"
-              label="Last name"
-              fullWidth
-              autoComplete="family-name"
             />
           </Grid>
           <Grid item xs={12}>
+            <TextField
+              required
+              id="url"
+              name="url"
+              label="Problem URL"
+              fullWidth
+            />
+          </Grid>
+          {/* <Grid item xs={12}>
             <TextField
               required
               id="address1"
@@ -139,9 +147,18 @@ export default function AddressForm() {
               }
               label="Use this address for payment details"
             />
-          </Grid>
+          </Grid> */}
+          <div className={classes.buttons}>
+            <Button color="primary" variant="contained" disableElevation>
+              Start Problem
+            </Button>
+            <Button color="primary" variant="outlined">
+              Complete Problem
+            </Button>
+            <Button>Cancel</Button>
+          </div>
         </Grid>
-      </React.Fragment>
-    </Paper>
+      </Paper>
+    </Container>
   );
 }
