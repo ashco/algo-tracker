@@ -8,9 +8,9 @@ import awsexports from "../../aws-exports";
 import { makeStyles } from "@material-ui/core/styles";
 
 import AppBar from "@material-ui/core/AppBar";
-import AddIcon from "@material-ui/icons/Add";
+
 import Toolbar from "@material-ui/core/Toolbar";
-import Fab from "@material-ui/core/Fab";
+
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TimelineIcon from "@material-ui/icons/Timeline";
@@ -22,15 +22,19 @@ import withAlerts from "../../context/withAlerts";
 import { AlertContext } from "../../context/withAlerts";
 
 import Home from "../home";
+import Paper from "@material-ui/core/Paper";
 // import AuthForm from "../auth";
 import Analytics from "../analytics";
 import History from "../history";
-import "./App.css";
+// import "./App.css";
 import SignIn from "../auth/signIn";
 import SignUp from "../auth/signUp";
 import ConfirmSignUp from "../auth/confirmSignUp";
 import ForgotPassword from "../auth/forgotPassword";
 import ForgotPasswordSubmit from "../auth/forgotPasswordSubmit";
+
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
 
 Amplify.configure(awsexports);
 
@@ -55,6 +59,8 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    textAlign: "left",
+    fontWeight: 600,
   },
   list: {
     width: "250px",
@@ -141,20 +147,26 @@ function App() {
             )}
           </Toolbar>
         </AppBar>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/history" component={History} />
-          <Route exact path="/analytics" component={Analytics} />
-          <Route exact path="/sign-in" component={SignIn} />
-          <Route exact path="/sign-up" component={SignUp} />
-          <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
-          <Route exact path="/forgot-password" component={ForgotPassword} />
-          <Route
-            exact
-            path="/forgot-password-submit"
-            component={ForgotPasswordSubmit}
-          />
-        </Switch>
+        <main>
+          {/* <Paper> */}
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/history">
+              <History user={user} />
+            </Route>
+            <Route exact path="/analytics" component={Analytics} />
+            <Route exact path="/sign-in" component={SignIn} />
+            <Route exact path="/sign-up" component={SignUp} />
+            <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
+            <Route exact path="/forgot-password" component={ForgotPassword} />
+            <Route
+              exact
+              path="/forgot-password-submit"
+              component={ForgotPasswordSubmit}
+            />
+          </Switch>
+          {/* </Paper> */}
+        </main>
         <BottomNavigation
           value={navVal}
           showLabels
@@ -171,17 +183,6 @@ function App() {
             icon={<TimelineIcon />}
           />
         </BottomNavigation>
-
-        {user && (
-          <Fab
-            size="large"
-            color="secondary"
-            aria-label="add"
-            className={classes.fab}
-          >
-            <AddIcon />
-          </Fab>
-        )}
       </div>
     </HelmetProvider>
   );
