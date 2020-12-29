@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Link, useHistory } from "react-router-dom";
 import {
-  createMuiTheme,
+  unstable_createMuiStrictModeTheme as createMuiTheme,
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core/styles";
@@ -15,6 +15,7 @@ import "fontsource-roboto";
 
 const theme = createMuiTheme({
   palette: {
+    type: "dark",
     primary: blueGrey,
     secondary: orange,
   },
