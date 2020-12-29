@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
 import AddIcon from "@material-ui/icons/Add";
@@ -19,33 +19,17 @@ import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme) => ({
-  // root: {
-  //   flexGrow: 1,
-  // },
-  // menuButton: {
-  //   marginRight: theme.spacing(2),
-  // },
-  // bottomNav: {
-  //   bottom: 0,
-  //   position: "fixed",
-  //   width: "100vw",
-  // },
-  // title: {
-  //   flexGrow: 1,
-  // },
-  // list: {
-  //   width: "250px",
-  // },
   card: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
   },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
+  // cardGrid: {
+  //   paddingTop: theme.spacing(4),
+  //   paddingBottom: theme.spacing(10),
+  // },
   cardContent: {
+    paddingBottom: 8,
     // display: "grid",
     // gridTemplateColumns: "1fr auto",
     // paddingBottom: 0,
@@ -54,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   fab: {
-    bottom: 20,
+    bottom: 70,
     right: 20,
     margin: 0,
     top: "auto",
@@ -107,18 +91,22 @@ const useStyles = makeStyles((theme) => ({
     display: "grid",
     gridTemplateColumns: "100px 1fr",
   },
+  margin: {
+    margin: theme.spacing(1),
+  },
 }));
 
 const cards = [1, 2, 3];
 
 const History: React.FC<{ user: any }> = ({ user }) => {
   const classes = useStyles();
+  const history = useHistory();
 
   return (
-    <Container className={classes.cardGrid} maxWidth="md">
+    <>
       <Grid container spacing={4}>
         {cards.map((card) => (
-          <Grid item key={card} xs={12} sm={6}>
+          <Grid item key={card} xs={12} md={6}>
             <Card className={classes.card}>
               <CardContent className={classes.cardContent}>
                 <div className={classes.cardHeader} title="Problem Title">
@@ -140,10 +128,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
                     <div className={classes.chips}>
                       <Chip label="Binary Search" color="secondary" />
                       <Chip label="DFS" color="secondary" />
-                      <Chip label="Binary Search2" color="secondary" />
-                      <Chip label="DFS2" color="secondary" />
-                      <Chip label="Binary Search3" color="secondary" />
-                      <Chip label="DFS3" color="secondary" />
+                      <Chip label="BFS" color="secondary" />
                     </div>
                     <div className={classes.chips}>
                       <Chip label="Trie" />
@@ -153,7 +138,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
                 </div>
               </CardContent>
               <CardActions className={classes.cardActions}>
-                <Button size="small" color="primary">
+                <Button size="small" variant="contained" color="primary">
                   View
                 </Button>
                 <Button size="small" color="primary">
@@ -164,20 +149,15 @@ const History: React.FC<{ user: any }> = ({ user }) => {
           </Grid>
         ))}
       </Grid>
-    </Container>
-    // <Container>
-    //   <Grid container spacing={3}>
-    //     <Grid item xs={12} spacing={3}>
-    //       <Paper className={classes.paper}>item</Paper>
-    //     </Grid>
-    //     <Grid item xs={12} spacing={3}>
-    //       <Paper className={classes.paper}>item</Paper>
-    //     </Grid>
-    //     <Grid item xs={12} spacing={3}>
-    //       <Paper className={classes.paper}>item</Paper>
-    //     </Grid>
-    //   </Grid>
-    // </Container>
+      <Fab
+        color="secondary"
+        aria-label="add"
+        className={classes.fab}
+        onClick={() => history.push("/form")}
+      >
+        <AddIcon />
+      </Fab>
+    </>
   );
 };
 

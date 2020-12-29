@@ -17,6 +17,7 @@ import TimelineIcon from "@material-ui/icons/Timeline";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import RestoreIcon from "@material-ui/icons/Restore";
+import Container from "@material-ui/core/Container";
 
 import withAlerts from "../../context/withAlerts";
 import { AlertContext } from "../../context/withAlerts";
@@ -26,6 +27,7 @@ import Paper from "@material-ui/core/Paper";
 // import AuthForm from "../auth";
 import Analytics from "../analytics";
 import History from "../history";
+import Form from "../form";
 // import "./App.css";
 import SignIn from "../auth/signIn";
 import SignUp from "../auth/signUp";
@@ -38,14 +40,12 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 Amplify.configure(awsexports);
 
-// const theme = createMuiTheme({
-//   palette: {
-//     primary: blueGrey,
-//     secondary: orange,
-//   },
-// });
-
 const useStyles = makeStyles((theme) => ({
+  app: {
+    display: "grid",
+    gridTemplateRows: "auto 1fr auto",
+    height: "100vh",
+  },
   root: {
     flexGrow: 1,
   },
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   bottomNav: {
     bottom: 0,
-    position: "fixed",
+    position: "sticky",
     width: "100vw",
   },
   title: {
@@ -72,6 +72,10 @@ const useStyles = makeStyles((theme) => ({
     top: "auto",
     left: "auto",
     position: "fixed",
+  },
+  cardGrid: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(10),
   },
 }));
 
@@ -123,7 +127,7 @@ function App() {
 
   return (
     <HelmetProvider>
-      <div className="App">
+      <div className={classes.app}>
         <Helmet>
           <title>Algo Tracker</title>
           <meta
@@ -148,24 +152,28 @@ function App() {
           </Toolbar>
         </AppBar>
         <main>
-          {/* <Paper> */}
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/history">
-              <History user={user} />
-            </Route>
-            <Route exact path="/analytics" component={Analytics} />
-            <Route exact path="/sign-in" component={SignIn} />
-            <Route exact path="/sign-up" component={SignUp} />
-            <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
-            <Route exact path="/forgot-password" component={ForgotPassword} />
-            <Route
-              exact
-              path="/forgot-password-submit"
-              component={ForgotPasswordSubmit}
-            />
-          </Switch>
-          {/* </Paper> */}
+          <Container className={classes.cardGrid} maxWidth="md">
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route exact path="/history">
+                <History user={user} />
+              </Route>
+              <Route exact path="/form">
+                <Form />
+              </Route>
+              <Route exact path="/analytics" component={Analytics} />
+              {/* Auth */}
+              <Route exact path="/sign-in" component={SignIn} />
+              <Route exact path="/sign-up" component={SignUp} />
+              <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
+              <Route exact path="/forgot-password" component={ForgotPassword} />
+              <Route
+                exact
+                path="/forgot-password-submit"
+                component={ForgotPasswordSubmit}
+              />
+            </Switch>
+          </Container>
         </main>
         <BottomNavigation
           value={navVal}
