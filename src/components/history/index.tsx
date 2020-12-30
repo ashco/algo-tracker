@@ -18,8 +18,12 @@ import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 
+import { DataStore } from "aws-amplify";
+import { onUpdateProblem } from "../../graphql/subscriptions";
+import { Problem } from "../../models";
+
 const useStyles = makeStyles((theme) => ({
-  card: {
+  problem: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
@@ -96,63 +100,106 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [1, 2, 3];
-
 const History: React.FC<{ user: any }> = ({ user }) => {
   const classes = useStyles();
   const history = useHistory();
+  const [problems, setProblems] = React.useState<Problem[]>([]);
+
+  React.useEffect(() => {
+    // DataStore.clear();
+
+    async function getItems() {
+      try {
+        const theItems = await DataStore.query(Problem);
+        setProblems(theItems);
+        console.log("Posts retrieved successfully.", theItems);
+      } catch (err) {
+        console.log("Error retrieving problems", err);
+      }
+    }
+
+    getItems();
+
+    // // @ts-ignore
+    // const subscription = API.graphql(graphqlOperation(onUpdateProblem)).subscribe({
+    //   next: (res: SubscriptionValue<OnCreateTodoSubscription>) => {
+    //     const problems = mapOnCreateTodoSubscription(res.value.data);
+    //     console.log(todo);
+    //     setProblems([...todos, todo]);
+    //   },
+    // });
+    // const subscription = API.graphql(
+    //   graphqlOperation(onUpdateProblem)
+    // ).subscribe({
+    //   next: (res: ) => {
+    //     console.log("data: ", data);
+    //   },
+    // });
+    // return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <Container className={classes.cardGrid} maxWidth="md">
       <Grid container spacing={4}>
-        {cards.map((card) => (
-          <Grid item key={card} xs={12} md={6}>
-            <Card className={classes.card}>
-              <CardContent className={classes.cardContent}>
-                <div className={classes.cardHeader} title="Problem Title">
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Problem Title
-                  </Typography>
-                  <Avatar className={classes.easy}>E</Avatar>
-                </div>
-                <div className={classes.cardCenter}>
-                  <div>
-                    <Typography variant="overline" display="block">
-                      2 Days Ago
+        {problems.map((problem) => {
+          console.log(problem);
+          return (
+            <Grid item key={problem.id} xs={12} md={6}>
+              <Card className={classes.problem}>
+                <CardContent className={classes.cardContent}>
+                  <div className={classes.cardHeader} title="Problem Title">
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {problem.title}
                     </Typography>
-                    <Typography variant="overline" display="block">
-                      34 mins
-                    </Typography>
+                    <Avatar className={classes.easy}>E</Avatar>
                   </div>
-                  <div>
-                    <div className={classes.chips}>
-                      <Chip label="Binary Search" color="secondary" />
-                      <Chip label="DFS" color="secondary" />
-                      <Chip label="BFS" color="secondary" />
+                  <div className={classes.cardCenter}>
+                    <div>
+                      <Typography variant="overline" display="block">
+                        {problem.url}
+                      </Typography>
+                      <Typography variant="overline" display="block">
+                        {problem.timestamp}
+                      </Typography>
+                      <Typography variant="overline" display="block">
+                        {problem.duration}
+                      </Typography>
                     </div>
-                    <div className={classes.chips}>
-                      <Chip label="Trie" />
-                      <Chip label="Array" />
+                    <div>
+                      <div className={classes.chips}>
+                        {problem.algorithms.map((algo, i) => {
+                          return (
+                            <Chip label={algo} key={i} color="secondary" />
+                          );
+                        })}
+                        {/* <Chip label="Binary Search" color="secondary" />
+                        <Chip label="DFS" color="secondary" />
+                        <Chip label="BFS" color="secondary" /> */}
+                      </div>
+                      <div className={classes.chips}>
+                        <Chip label="Trie" />
+                        <Chip label="Array" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-              <CardActions className={classes.cardActions}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  disableElevation
-                >
-                  View
-                </Button>
-                <Button size="small" color="primary">
-                  Edit
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
+                </CardContent>
+                <CardActions className={classes.cardActions}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    disableElevation
+                  >
+                    View
+                  </Button>
+                  <Button size="small" color="primary">
+                    Edit
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
       <Fab
         color="secondary"

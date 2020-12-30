@@ -16,6 +16,12 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 
+import { Difficulty, Algorithm, DataStructure } from "../../models";
+
+import { DataStore } from "aws-amplify";
+import { Problem } from "../../models";
+import { CreateProblemInput } from "../../API";
+
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -80,59 +86,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum Difficulty {
-  EASY = "Easy",
-  MEDIUM = "Medium",
-  HARD = "Hard",
-}
+// interface FormValues {
+//   title: string;
+//   url: string;
+//   difficulty: Difficulty | "";
+//   duration: number;
+//   date: any;
+//   algorithms: Algorithm[];
+//   dataStructures: DataStructure[];
+//   notes: string;
+//   replUrl: string;
+// }
 
-type Algorithm =
-  | "Pointer"
-  | "Runner"
-  | "Binary Search"
-  | "DFS"
-  | "BFS"
-  | "Quick Sort"
-  | "Merge Sort"
-  | "Recursion"
-  | "DP"
-  | "Greedy";
-
-type DataStructures =
-  | "Array"
-  | "String"
-  | "Linked List"
-  | "Stack"
-  | "Queue"
-  | "Hash Table"
-  | "Binary Tree"
-  | "Binary Search Tree"
-  | "Trie"
-  | "Heap"
-  | "Graph";
-
-interface FormValues {
-  title: string;
-  url: string;
-  difficulty: Difficulty | "";
-  duration: number;
-  date: any;
-  algorithms: Algorithm[];
-  dataStructures: DataStructures[];
-  notes: string;
-  replUrl: string;
-}
-
-const defaultValues: FormValues = {
-  title: "",
-  url: "",
-  difficulty: "",
-  duration: 0,
-  date: new Date("2014-08-18T21:11:54"),
-  algorithms: [],
-  dataStructures: [],
-  notes: "",
+// const defaultValues: FormValues = {
+//   title: "",
+//   url: "",
+//   difficulty: "",
+//   duration: 0,
+//   date: new Date("2014-08-18T21:11:54"),
+//   algorithms: [],
+//   dataStructures: [],
+//   notes: "",
+//   replUrl: "",
+// };
+const defaultValues: CreateProblemInput = {
+  title: "THE ONE WITH THE TAGS",
+  url: "https://leetcode.com/",
   replUrl: "",
+  notes: "",
+  difficulty: Difficulty.EASY,
+  duration: "43",
+  timestamp: 1609361576984,
+  // time: "12:30:24-07:00",
+  // date: "2014-08-18",
+  algorithms: [Algorithm.POINTERS, Algorithm.QUICK_SORT],
+  dataStructures: [DataStructure.ARRAY, DataStructure.QUEUE],
 };
 
 const algorithms = [
@@ -170,15 +158,17 @@ export default function AddressForm() {
     watch,
     errors,
     control,
-  } = useForm<FormValues>({ defaultValues });
-  // console.log(watch()); // watch input value by passing the name of it
-  // const [difficulty, setDifficulty] = React.useState("");
+  } = useForm<CreateProblemInput>({ defaultValues });
 
-  // const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-  //   setDifficulty(event.target.value as string);
-  // };
-
-  const onSubmit = (data: FormValues) => console.log(data);
+  const onSubmit = async (data: CreateProblemInput) => {
+    console.log("starting");
+    try {
+      await DataStore.save(new Problem(defaultValues));
+      console.log("Post saved successfully!");
+    } catch (err) {
+      console.log("Error saving post", err);
+    }
+  };
 
   return (
     <Container className={classes.cardGrid} maxWidth="sm">
@@ -255,16 +245,16 @@ export default function AddressForm() {
                 }
               /> */}
             </Grid>
-            <div className={classes.chips}>
+            {/* <div className={classes.chips}>
               {algorithms.map((algo) => {
                 return <Chip label={algo} clickable color="default" />;
               })}
-            </div>
-            <div className={classes.chips}>
+            </div> */}
+            {/* <div className={classes.chips}>
               {dataStructures.map((ds) => {
                 return <Chip label={ds} clickable color="default" />;
               })}
-            </div>
+            </div> */}
             <Grid item xs={12}>
               <TextField
                 id="notes"
@@ -289,10 +279,10 @@ export default function AddressForm() {
             </Grid>
 
             <div className={classes.buttons}>
-              <Button color="primary" variant="contained" disableElevation>
+              {/* <Button color="primary" variant="outlined" disableElevation>
                 Start
-              </Button>
-              <Button color="primary" variant="outlined">
+              </Button> */}
+              <Button color="primary" variant="contained" type="submit">
                 Complete
               </Button>
               <Button>Cancel</Button>
