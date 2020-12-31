@@ -1,13 +1,11 @@
 import React from "react";
 
 import { useForm, Controller, useController } from "react-hook-form";
-import ReactSelect from "react-select";
-
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Chip from "@material-ui/core/Chip";
 import Paper from "@material-ui/core/Paper";
 import Container from "@material-ui/core/Container";
@@ -16,7 +14,9 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import Checkbox from "@material-ui/core/Checkbox";
+
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 
 import { Difficulty, Algorithm, DataStructure } from "../../models";
 
@@ -25,12 +25,6 @@ import { Problem } from "../../models";
 import { CreateProblemInput } from "../../API";
 
 import { EnumReflection } from "../../lib/EnumReflection";
-
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -47,11 +41,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(3),
+    // marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     padding: theme.spacing(2),
     [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
-      marginTop: theme.spacing(6),
+      // marginTop: theme.spacing(6),
       marginBottom: theme.spacing(6),
       padding: theme.spacing(3),
     },
@@ -88,19 +82,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     flexWrap: "wrap",
   },
+  // tags: {
+  //   padding: theme.spacing(0, 1),
+  //   // paddingBottom: 0,
+  // },
 }));
-
-// interface FormValues {
-//   title: string;
-//   url: string;
-//   difficulty: Difficulty | "";
-//   duration: number;
-//   date: any;
-//   algorithms: Algorithm[];
-//   dataStructures: DataStructure[];
-//   notes: string;
-//   replUrl: string;
-// }
 
 const defaultValues: CreateProblemInput = {
   title: "",
@@ -114,11 +100,6 @@ const defaultValues: CreateProblemInput = {
   replUrl: "",
 };
 
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
 // const defaultValues: CreateProblemInput = {
 //   title: "THE ONE WITH THE TAGS",
 //   url: "https://leetcode.com/",
@@ -145,6 +126,21 @@ const options = [
 //   "DP",
 //   "Greedy",
 // ];
+
+// const dataStructures = [
+//   "Array",
+//   "String",
+//   "Linked List",
+//   "Stack",
+//   "Queue",
+//   "Hash Table",
+//   "Binary Tree",
+//   "Binary Search Tree",
+//   "Trie",
+//   "Heap",
+//   "Graph",
+// ];
+
 const algorithms = [
   Algorithm.DYNAMIC_PROGRAMMING,
   Algorithm.POINTERS,
@@ -156,55 +152,32 @@ const algorithms = [
   Algorithm.RECURSION,
   Algorithm.GREEDY_METHOD,
 ];
-// const algorithms: Algorithm[] = EnumReflection.getNames(Algorithm);
-// console.log(algorithms);
-const dataStructures = [
-  "Array",
-  "String",
-  "Linked List",
-  "Stack",
-  "Queue",
-  "Hash Table",
-  "Binary Tree",
-  "Binary Search Tree",
-  "Trie",
-  "Heap",
-  "Graph",
-];
 
-// function MultiSelect(props: any) {
-//   const { field, meta } = useController(props);
-//   // console.log(field);
-//   // field.onChange = (val) => [val];
-//   return (
-//     <div>
-//       {algorithms.map((algo, i) => {
-//         return <Chip label={algo} key={i} clickable {...field} />;
-//       })}
-//       {/* <input {...field} placeholder={props.name} />
-//       <p>{meta.isTouched && "Touched"}</p>
-//       <p>{meta.isDirty && "Dirty"}</p>
-//       <p>{meta.invalid ? "invalid" : "valid"}</p> */}
-//     </div>
-//   );
-// }
+const dataStructures = [
+  DataStructure.ARRAY,
+  DataStructure.BINARY_SEARCH_TREE,
+  DataStructure.BINARY_TREE,
+  DataStructure.GRAPH,
+  DataStructure.HASH_TABLE,
+  DataStructure.HEAP,
+  DataStructure.LINKED_LIST,
+  DataStructure.QUEUE,
+  DataStructure.STACK,
+  DataStructure.STRING,
+  DataStructure.TRIE,
+];
 
 export default function AddressForm() {
   const {
     register,
     handleSubmit,
     watch,
-    errors,
     control,
-    getValues,
-    setValue,
   } = useForm<CreateProblemInput>({ defaultValues });
   const classes = useStyles();
-
-  const formAlgos = getValues("algorithms");
+  const history = useHistory();
 
   const onSubmit = async (data: CreateProblemInput) => {
-    // DataStore.clear();
     try {
       await DataStore.save(new Problem(data));
       console.log("Post saved!");
@@ -213,136 +186,195 @@ export default function AddressForm() {
     }
   };
 
-  console.log({ ...watch() });
-  // console.log(formAlgos);
-  // I've done dynamic RN forms stuff but have not used useFieldArray.
-  // I have wrapped all of my field types in <Controller>s.
-  // And so far the only "array type" I have needed has been for multi-selects, that I was able to handle simply by setting the value of a single <Controller> to the array output (having the Controller's onChange being called for each selection made in the multi-select control, and .push()ing the value
+  // console.log({ ...watch() });
 
   return (
-    <Container className={classes.cardGrid} maxWidth="sm">
-      <Paper className={classes.paper}>
-        <Typography variant="h5" gutterBottom>
-          New Problem
-        </Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="title"
-                name="title"
-                label="Problem Title"
-                fullWidth
-                inputRef={register}
-                // variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="url"
-                name="url"
-                label="Problem URL"
-                fullWidth
-                inputRef={register}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="difficulty-select">Difficulty</InputLabel>
-                <Controller
-                  control={control}
-                  name="difficulty"
-                  as={
-                    <Select id="difficulty-select">
-                      <MenuItem value="EASY">Easy</MenuItem>
-                      <MenuItem value="MEDIUM">Medium</MenuItem>
-                      <MenuItem value="HARD">Hard</MenuItem>
-                    </Select>
-                  }
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Container className={classes.cardGrid} maxWidth="sm">
+        <Paper className={classes.paper}>
+          <Typography variant="h5" gutterBottom>
+            New Problem
+          </Typography>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="title"
+                  name="title"
+                  label="Problem Title"
+                  fullWidth
+                  inputRef={register}
                 />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="duration"
-                name="duration"
-                label="Duration"
-                // variant="outlined"
-                fullWidth
-                type="number"
-                inputRef={register}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Controller
-                name="algorithms"
-                control={control}
-                render={({ onChange, onBlur, value, name, ref }) => {
-                  return (
-                    <div className={classes.chips}>
-                      {algorithms.map((algo, i) => {
-                        return (
-                          <Chip
-                            key={i}
-                            clickable
-                            label={algo}
-                            color={value.includes(algo) ? "primary" : "default"}
-                            onClick={() => {
-                              const newValue = [...value];
-                              const idx = newValue.indexOf(algo);
-                              if (idx === -1) {
-                                newValue.push(algo);
-                              } else {
-                                newValue.splice(idx, 1);
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  id="url"
+                  name="url"
+                  label="Problem URL"
+                  fullWidth
+                  inputRef={register}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <FormControl className={classes.formControl} required>
+                  <InputLabel htmlFor="difficulty-select">
+                    Difficulty
+                  </InputLabel>
+                  <Controller
+                    control={control}
+                    name="difficulty"
+                    as={
+                      <Select id="difficulty-select">
+                        <MenuItem value="EASY">Easy</MenuItem>
+                        <MenuItem value="MEDIUM">Medium</MenuItem>
+                        <MenuItem value="HARD">Hard</MenuItem>
+                      </Select>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  required
+                  id="duration"
+                  name="duration"
+                  label="Mins to Complete"
+                  // variant="outlined"
+                  fullWidth
+                  type="number"
+                  inputRef={register}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Controller
+                  name="timestamp"
+                  control={control}
+                  render={({ value, onChange }) => {
+                    return (
+                      <DateTimePicker
+                        label="Completed At"
+                        required
+                        showTodayButton
+                        format="yyyy/MM/dd HH:mm"
+                        value={value}
+                        onChange={(date) => {
+                          onChange(date?.getTime());
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputLabel shrink>Algorithms</InputLabel>
+                <Controller
+                  name="algorithms"
+                  control={control}
+                  render={({ onChange, onBlur, value, name, ref }) => {
+                    return (
+                      <>
+                        <div className={classes.chips}>
+                          {algorithms.map((algo, i) => {
+                            return (
+                              <Chip
+                                key={i}
+                                clickable
+                                label={algo}
+                                color={
+                                  value.includes(algo) ? "primary" : "default"
+                                }
+                                onClick={() => {
+                                  const newValue = [...value];
+                                  const idx = newValue.indexOf(algo);
+                                  if (idx === -1) {
+                                    newValue.push(algo);
+                                  } else {
+                                    newValue.splice(idx, 1);
+                                  }
+                                  onChange(newValue);
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                      </>
+                    );
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputLabel shrink>Data Structures</InputLabel>
+                <Controller
+                  name="dataStructures"
+                  control={control}
+                  render={({ onChange, onBlur, value, name, ref }) => {
+                    return (
+                      <div className={classes.chips}>
+                        {dataStructures.map((ds, i) => {
+                          return (
+                            <Chip
+                              key={i}
+                              clickable
+                              label={ds}
+                              color={
+                                value.includes(ds) ? "secondary" : "default"
                               }
-                              onChange(newValue);
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="notes"
-                name="notes"
-                label="Notes"
-                fullWidth
-                inputRef={register}
-                multiline
-                rows={4}
-                // variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="replUrl"
-                name="replUrl"
-                label="REPL URL"
-                fullWidth
-                inputRef={register}
-                // variant="outlined"
-              />
-            </Grid>
+                              onClick={() => {
+                                const newValue = [...value];
+                                const idx = newValue.indexOf(ds);
+                                if (idx === -1) {
+                                  newValue.push(ds);
+                                } else {
+                                  newValue.splice(idx, 1);
+                                }
+                                onChange(newValue);
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="notes"
+                  name="notes"
+                  label="Notes"
+                  fullWidth
+                  inputRef={register}
+                  multiline
+                  rows={4}
+                  // variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="replUrl"
+                  name="replUrl"
+                  label="REPL URL"
+                  fullWidth
+                  inputRef={register}
+                  // variant="outlined"
+                />
+              </Grid>
 
-            <div className={classes.buttons}>
-              {/* <Button color="primary" variant="outlined" disableElevation>
+              <div className={classes.buttons}>
+                {/* <Button color="primary" variant="outlined" disableElevation>
                 Start
               </Button> */}
-              <Button color="primary" variant="contained" type="submit">
-                Complete
-              </Button>
-              <Button>Cancel</Button>
-            </div>
-          </Grid>
-        </form>
-      </Paper>
-    </Container>
+                <Button onClick={() => history.push("/list")}>Cancel</Button>
+                <Button color="primary" variant="contained" type="submit">
+                  Complete
+                </Button>
+              </div>
+            </Grid>
+          </form>
+        </Paper>
+      </Container>
+    </MuiPickersUtilsProvider>
   );
 }

@@ -16,9 +16,7 @@ import Button from "@material-ui/core/Button";
 import TimelineIcon from "@material-ui/icons/Timeline";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import RestoreIcon from "@material-ui/icons/Restore";
-import Container from "@material-ui/core/Container";
-
+import ListIcon from "@material-ui/icons/List";
 import withAlerts from "../../context/withAlerts";
 import { AlertContext } from "../../context/withAlerts";
 
@@ -26,7 +24,7 @@ import Home from "../home";
 import Paper from "@material-ui/core/Paper";
 // import AuthForm from "../auth";
 import Analytics from "../analytics";
-import History from "../history";
+import List from "../list";
 import Form from "../form";
 // import "./App.css";
 import SignIn from "../auth/signIn";
@@ -154,8 +152,8 @@ function App() {
         <main>
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/history">
-              <History user={user} />
+            <Route exact path="/list">
+              <List user={user} />
             </Route>
             <Route exact path="/form">
               <Form />
@@ -180,9 +178,9 @@ function App() {
           className={classes.bottomNav}
         >
           <BottomNavigationAction
-            onClick={() => history.push("/history")}
-            label="History"
-            icon={<RestoreIcon />}
+            onClick={() => history.push("/list")}
+            label="List"
+            icon={<ListIcon />}
           />
           <BottomNavigationAction
             onClick={() => history.push("/analytics")}

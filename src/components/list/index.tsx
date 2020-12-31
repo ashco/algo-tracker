@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const History: React.FC<{ user: any }> = ({ user }) => {
+const List: React.FC<{ user: any }> = ({ user }) => {
   const classes = useStyles();
   const history = useHistory();
   const [problems, setProblems] = React.useState<Problem[]>([]);
@@ -117,7 +117,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
     }
 
     getProblems();
-    console.log(problems);
+    // console.log(problems);
     // // @ts-ignore
     // const subscription = API.graphql(graphqlOperation(onUpdateProblem)).subscribe({
     //   next: (res: SubscriptionValue<OnCreateTodoSubscription>) => {
@@ -135,7 +135,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
     // });
     // return () => subscription.unsubscribe();
   }, []);
-
+  // DataStore.clear();
   return (
     <Container className={classes.cardGrid} maxWidth="md">
       <Grid container spacing={4}>
@@ -209,4 +209,4 @@ const History: React.FC<{ user: any }> = ({ user }) => {
   );
 };
 
-export default History;
+export default List;
