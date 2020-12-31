@@ -106,9 +106,7 @@ const History: React.FC<{ user: any }> = ({ user }) => {
   const [problems, setProblems] = React.useState<Problem[]>([]);
 
   React.useEffect(() => {
-    // DataStore.clear();
-
-    async function getItems() {
+    async function getProblems() {
       try {
         const theItems = await DataStore.query(Problem);
         setProblems(theItems);
@@ -118,8 +116,8 @@ const History: React.FC<{ user: any }> = ({ user }) => {
       }
     }
 
-    getItems();
-
+    getProblems();
+    console.log(problems);
     // // @ts-ignore
     // const subscription = API.graphql(graphqlOperation(onUpdateProblem)).subscribe({
     //   next: (res: SubscriptionValue<OnCreateTodoSubscription>) => {
@@ -172,13 +170,11 @@ const History: React.FC<{ user: any }> = ({ user }) => {
                             <Chip label={algo} key={i} color="secondary" />
                           );
                         })}
-                        {/* <Chip label="Binary Search" color="secondary" />
-                        <Chip label="DFS" color="secondary" />
-                        <Chip label="BFS" color="secondary" /> */}
                       </div>
                       <div className={classes.chips}>
-                        <Chip label="Trie" />
-                        <Chip label="Array" />
+                        {problem.dataStructures.map((ds, i) => {
+                          return <Chip label={ds} key={i} />;
+                        })}
                       </div>
                     </div>
                   </div>

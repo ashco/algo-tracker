@@ -1,6 +1,7 @@
 import React from "react";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useController } from "react-hook-form";
+import ReactSelect from "react-select";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -15,12 +16,15 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import Checkbox from "@material-ui/core/Checkbox";
 
 import { Difficulty, Algorithm, DataStructure } from "../../models";
 
 import { DataStore } from "aws-amplify";
 import { Problem } from "../../models";
 import { CreateProblemInput } from "../../API";
+
+import { EnumReflection } from "../../lib/EnumReflection";
 
 import {
   MuiPickersUtilsProvider,
@@ -98,43 +102,62 @@ const useStyles = makeStyles((theme) => ({
 //   replUrl: string;
 // }
 
-// const defaultValues: FormValues = {
-//   title: "",
-//   url: "",
-//   difficulty: "",
-//   duration: 0,
-//   date: new Date("2014-08-18T21:11:54"),
-//   algorithms: [],
-//   dataStructures: [],
-//   notes: "",
-//   replUrl: "",
-// };
 const defaultValues: CreateProblemInput = {
-  title: "THE ONE WITH THE TAGS",
+  title: "",
   url: "https://leetcode.com/",
-  replUrl: "",
-  notes: "",
   difficulty: Difficulty.EASY,
-  duration: "43",
-  timestamp: 1609361576984,
-  // time: "12:30:24-07:00",
-  // date: "2014-08-18",
-  algorithms: [Algorithm.POINTERS, Algorithm.QUICK_SORT],
-  dataStructures: [DataStructure.ARRAY, DataStructure.QUEUE],
+  duration: "34",
+  timestamp: new Date().getTime(),
+  algorithms: [],
+  dataStructures: [],
+  notes: "",
+  replUrl: "",
 };
 
-const algorithms = [
-  "Pointer",
-  "Runner",
-  "Binary Search",
-  "DFS",
-  "BFS",
-  "Quick Sort",
-  "Merge Sort",
-  "Recursion",
-  "DP",
-  "Greedy",
+const options = [
+  { value: "chocolate", label: "Chocolate" },
+  { value: "strawberry", label: "Strawberry" },
+  { value: "vanilla", label: "Vanilla" },
 ];
+// const defaultValues: CreateProblemInput = {
+//   title: "THE ONE WITH THE TAGS",
+//   url: "https://leetcode.com/",
+//   replUrl: "",
+//   notes: "",
+//   difficulty: Difficulty.EASY,
+//   duration: "43",
+//   timestamp: 1609361576984,
+//   // time: "12:30:24-07:00",
+//   // date: "2014-08-18",
+//   algorithms: [Algorithm.POINTERS, Algorithm.QUICK_SORT],
+//   dataStructures: [DataStructure.ARRAY, DataStructure.QUEUE],
+// };
+
+// const algorithms = [
+//   "Pointer",
+//   "Runner",
+//   "Binary Search",
+//   "DFS",
+//   "BFS",
+//   "Quick Sort",
+//   "Merge Sort",
+//   "Recursion",
+//   "DP",
+//   "Greedy",
+// ];
+const algorithms = [
+  Algorithm.DYNAMIC_PROGRAMMING,
+  Algorithm.POINTERS,
+  Algorithm.BINARY_SEARCH,
+  Algorithm.DFS,
+  Algorithm.BFS,
+  Algorithm.QUICK_SORT,
+  Algorithm.MERGE_SORT,
+  Algorithm.RECURSION,
+  Algorithm.GREEDY_METHOD,
+];
+// const algorithms: Algorithm[] = EnumReflection.getNames(Algorithm);
+// console.log(algorithms);
 const dataStructures = [
   "Array",
   "String",
@@ -149,26 +172,52 @@ const dataStructures = [
   "Graph",
 ];
 
-export default function AddressForm() {
-  const classes = useStyles();
+// function MultiSelect(props: any) {
+//   const { field, meta } = useController(props);
+//   // console.log(field);
+//   // field.onChange = (val) => [val];
+//   return (
+//     <div>
+//       {algorithms.map((algo, i) => {
+//         return <Chip label={algo} key={i} clickable {...field} />;
+//       })}
+//       {/* <input {...field} placeholder={props.name} />
+//       <p>{meta.isTouched && "Touched"}</p>
+//       <p>{meta.isDirty && "Dirty"}</p>
+//       <p>{meta.invalid ? "invalid" : "valid"}</p> */}
+//     </div>
+//   );
+// }
 
+export default function AddressForm() {
   const {
     register,
     handleSubmit,
     watch,
     errors,
     control,
+    getValues,
+    setValue,
   } = useForm<CreateProblemInput>({ defaultValues });
+  const classes = useStyles();
+
+  const formAlgos = getValues("algorithms");
 
   const onSubmit = async (data: CreateProblemInput) => {
-    console.log("starting");
+    // DataStore.clear();
     try {
-      await DataStore.save(new Problem(defaultValues));
-      console.log("Post saved successfully!");
+      await DataStore.save(new Problem(data));
+      console.log("Post saved!");
     } catch (err) {
       console.log("Error saving post", err);
     }
   };
+
+  console.log({ ...watch() });
+  // console.log(formAlgos);
+  // I've done dynamic RN forms stuff but have not used useFieldArray.
+  // I have wrapped all of my field types in <Controller>s.
+  // And so far the only "array type" I have needed has been for multi-selects, that I was able to handle simply by setting the value of a single <Controller> to the array output (having the Controller's onChange being called for each selection made in the multi-select control, and .push()ing the value
 
   return (
     <Container className={classes.cardGrid} maxWidth="sm">
@@ -221,40 +270,44 @@ export default function AddressForm() {
                 id="duration"
                 name="duration"
                 label="Duration"
+                // variant="outlined"
                 fullWidth
                 type="number"
                 inputRef={register}
-                // variant="outlined"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              {/* <Controller
+            <Grid item xs={12}>
+              <Controller
+                name="algorithms"
                 control={control}
-                name="date"
-                as={
-                  <KeyboardDatePicker
-                    margin="normal"
-                    label="Date picker"
-                    format="MM/dd/yyyy"
-                    // value={selectedDate}
-                    // onChange={handleDateChange}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                    }}
-                  />
-                }
-              /> */}
+                render={({ onChange, onBlur, value, name, ref }) => {
+                  return (
+                    <div className={classes.chips}>
+                      {algorithms.map((algo, i) => {
+                        return (
+                          <Chip
+                            key={i}
+                            clickable
+                            label={algo}
+                            color={value.includes(algo) ? "primary" : "default"}
+                            onClick={() => {
+                              const newValue = [...value];
+                              const idx = newValue.indexOf(algo);
+                              if (idx === -1) {
+                                newValue.push(algo);
+                              } else {
+                                newValue.splice(idx, 1);
+                              }
+                              onChange(newValue);
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                }}
+              />
             </Grid>
-            {/* <div className={classes.chips}>
-              {algorithms.map((algo) => {
-                return <Chip label={algo} clickable color="default" />;
-              })}
-            </div> */}
-            {/* <div className={classes.chips}>
-              {dataStructures.map((ds) => {
-                return <Chip label={ds} clickable color="default" />;
-              })}
-            </div> */}
             <Grid item xs={12}>
               <TextField
                 id="notes"
