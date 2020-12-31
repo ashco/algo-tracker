@@ -1,5 +1,5 @@
 import React from "react";
-import { Helmet, HelmetProvider } from "react-helmet-async";
+
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 
 import Amplify, { Hub, Auth } from "aws-amplify";
@@ -33,6 +33,8 @@ import ConfirmSignUp from "../auth/confirmSignUp";
 import ForgotPassword from "../auth/forgotPassword";
 import ForgotPasswordSubmit from "../auth/forgotPasswordSubmit";
 
+import { Meta } from "../meta";
+
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 
@@ -44,12 +46,6 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateRows: "auto 1fr auto",
     height: "100vh",
   },
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
   bottomNav: {
     bottom: 0,
     position: "sticky",
@@ -60,9 +56,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     fontWeight: 600,
   },
-  list: {
-    width: "250px",
-  },
   fab: {
     bottom: 20,
     right: 20,
@@ -71,10 +64,11 @@ const useStyles = makeStyles((theme) => ({
     left: "auto",
     position: "fixed",
   },
-  // cardGrid: {
-  //   paddingTop: theme.spacing(4),
-  //   paddingBottom: theme.spacing(10),
-  // },
+  main: {
+    overflowY: "auto",
+    paddingTop: theme.spacing(12),
+    paddingBottom: theme.spacing(12),
+  },
 }));
 
 function App() {
@@ -124,72 +118,62 @@ function App() {
   }, [location]);
 
   return (
-    <HelmetProvider>
-      <div className={classes.app}>
-        <Helmet>
-          <title>Algo Tracker</title>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
+    <div className={classes.app}>
+      <Meta />
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h6" className={classes.title}>
+            Algo Tracker
+          </Typography>
+          {user === null ? (
+            <Button color="inherit" onClick={() => history.push("/sign-in")}>
+              Admin
+            </Button>
+          ) : (
+            <Button color="inherit" onClick={signOut}>
+              Sign Out
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+      <main className={classes.main}>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/list">
+            <List user={user} />
+          </Route>
+          <Route path="/form/:id">
+            <Form />
+          </Route>
+          <Route path="/form">
+            <Form />
+          </Route>
+          <Route exact path="/analytics" component={Analytics} />
+          {/* Auth */}
+          <Route exact path="/sign-in" component={SignIn} />
+          <Route exact path="/sign-up" component={SignUp} />
+          <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
+          <Route exact path="/forgot-password" component={ForgotPassword} />
+          <Route
+            exact
+            path="/forgot-password-submit"
+            component={ForgotPasswordSubmit}
           />
-        </Helmet>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" className={classes.title}>
-              Algo Tracker
-            </Typography>
-            {user === null ? (
-              <Button color="inherit" onClick={() => history.push("/sign-in")}>
-                Admin
-              </Button>
-            ) : (
-              <Button color="inherit" onClick={signOut}>
-                Sign Out
-              </Button>
-            )}
-          </Toolbar>
-        </AppBar>
-        <main>
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/list">
-              <List user={user} />
-            </Route>
-            <Route exact path="/form">
-              <Form />
-            </Route>
-            <Route exact path="/analytics" component={Analytics} />
-            {/* Auth */}
-            <Route exact path="/sign-in" component={SignIn} />
-            <Route exact path="/sign-up" component={SignUp} />
-            <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
-            <Route exact path="/forgot-password" component={ForgotPassword} />
-            <Route
-              exact
-              path="/forgot-password-submit"
-              component={ForgotPasswordSubmit}
-            />
-          </Switch>
-          {/* </Container> */}
-        </main>
-        <BottomNavigation
-          value={navVal}
-          showLabels
-          className={classes.bottomNav}
-        >
-          <BottomNavigationAction
-            onClick={() => history.push("/list")}
-            label="List"
-            icon={<ListIcon />}
-          />
-          <BottomNavigationAction
-            onClick={() => history.push("/analytics")}
-            label="Analytics"
-            icon={<TimelineIcon />}
-          />
-        </BottomNavigation>
-      </div>
-    </HelmetProvider>
+        </Switch>
+      </main>
+      <BottomNavigation value={navVal} showLabels className={classes.bottomNav}>
+        <BottomNavigationAction
+          onClick={() => history.push("/list")}
+          label="List"
+          icon={<ListIcon />}
+        />
+        <BottomNavigationAction
+          onClick={() => history.push("/analytics")}
+          label="Analytics"
+          icon={<TimelineIcon />}
+        />
+      </BottomNavigation>
+    </div>
   );
 }
 

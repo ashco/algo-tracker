@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useForm, Controller, useController } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -66,8 +66,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   cardGrid: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(10),
+    // paddingTop: theme.spacing(4),
+    // paddingBottom: theme.spacing(10),
   },
   formControl: {
     // margin: theme.spacing(1),
@@ -90,15 +90,26 @@ const useStyles = makeStyles((theme) => ({
 
 const defaultValues: CreateProblemInput = {
   title: "",
-  url: "https://leetcode.com/",
+  url: "",
   difficulty: Difficulty.EASY,
-  duration: "34",
+  duration: "0",
   timestamp: new Date().getTime(),
   algorithms: [],
   dataStructures: [],
   notes: "",
   replUrl: "",
 };
+// const defaultValues: CreateProblemInput = {
+//   title: "",
+//   url: "https://leetcode.com/",
+//   difficulty: Difficulty.EASY,
+//   duration: "34",
+//   timestamp: new Date().getTime(),
+//   algorithms: [],
+//   dataStructures: [],
+//   notes: "",
+//   replUrl: "",
+// };
 
 // const defaultValues: CreateProblemInput = {
 //   title: "THE ONE WITH THE TAGS",
@@ -167,19 +178,72 @@ const dataStructures = [
   DataStructure.TRIE,
 ];
 
+type Params = {
+  id?: string;
+};
+
+enum Status {
+  NEW,
+  EDIT,
+}
+
 export default function AddressForm() {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     control,
   } = useForm<CreateProblemInput>({ defaultValues });
   const classes = useStyles();
   const history = useHistory();
+  const params: Params = useParams();
+  const [status, setStatus] = React.useState<Status>(Status.NEW);
 
   const onSubmit = async (data: CreateProblemInput) => {
     try {
+      if (status === Status.EDIT) {
+        const id = params?.id;
+        if (id) {
+          const original = await DataStore.query(Problem, id);
+
+          if (original) {
+            console.log("Updating original");
+            // return history.push("/list");
+            // await DataStore.save(
+            //   Problem.copyOf(original, (updated) => {
+            //     // console.log(original);
+            //     for (let key of Object.keys(original)) {
+            //       // // @ts-ignore
+            //       // updated[key] = data[key];
+            //     }
+            //     // console.log(updated);
+            //     // updated.title = `title ${Date.now()}`;
+            //   })
+            // );
+            return;
+            // await DataStore.save(
+            // );
+          }
+        }
+      }
+
       await DataStore.save(new Problem(data));
+      history.push("/list");
+
+      // let problem = new Problem(data);
+
+      // if (status === Status.EDIT) {
+      //   const id = params?.id;
+      //   if (id) {
+      //     problem = await DataStore.query(Problem, id);
+      //   }
+      // }
+
+      // const problem = status === Status.NEW
+      //   ? new Problem(data)
+      //   : Post.copyOf(original, (updated) => updated.title = `title ${Date.now()}`)
+
       console.log("Post saved!");
     } catch (err) {
       console.log("Error saving post", err);
@@ -187,6 +251,21 @@ export default function AddressForm() {
   };
 
   // console.log({ ...watch() });
+
+  React.useEffect(() => {
+    async function loadFormData(params: Params) {
+      const id = params?.id;
+
+      if (id) {
+        console.log("loading data");
+        const data = await DataStore.query(Problem, id);
+        reset(data);
+        setStatus(Status.EDIT);
+      }
+    }
+
+    loadFormData(params);
+  }, [params]);
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -368,7 +447,7 @@ export default function AddressForm() {
               </Button> */}
                 <Button onClick={() => history.push("/list")}>Cancel</Button>
                 <Button color="primary" variant="contained" type="submit">
-                  Complete
+                  {status === Status.NEW ? "Complete" : "Update"}
                 </Button>
               </div>
             </Grid>
