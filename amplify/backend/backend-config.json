@@ -50,7 +50,15 @@
               "userPoolId": "authalgotracker85b930e8"
             }
           },
-          "additionalAuthenticationProviders": []
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "API_KEY",
+              "apiKeyConfig": {
+                "apiKeyExpirationDays": 365,
+                "description": "web"
+              }
+            }
+          ]
         }
       }
     }

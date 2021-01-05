@@ -51,13 +51,13 @@ const SignIn: React.FC = () => {
   const history = useHistory();
   const triggerAlert = React.useContext(AlertContext);
 
-  const { register, handleSubmit, watch, errors } = useForm<Form>();
+  const { register, handleSubmit } = useForm<Form>();
 
   async function signIn(data: Form) {
     try {
       await Auth.signIn(data.username, data.password);
       /* Once the user successfully signs in, update the form state to show the signed in state */
-      history.push("/history");
+      history.push("/list");
     } catch (err) {
       triggerAlert(err.log || err.message);
     }

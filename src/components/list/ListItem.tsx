@@ -1,6 +1,8 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 
+import { DataStore } from "aws-amplify";
+
 import { makeStyles } from "@material-ui/core/styles";
 
 import Card from "@material-ui/core/Card";
@@ -10,16 +12,24 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
 import { green, orange, red } from "@material-ui/core/colors";
-import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import { Difficulty, Problem } from "../../models";
+
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Modal from "@material-ui/core/Modal";
+import { formatChipText } from "../../lib/helpers";
+
+import { formatDistanceToNow } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
   data: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
+    padding: theme.spacing(1),
   },
   cardGrid: {
     paddingTop: theme.spacing(4),
@@ -33,15 +43,17 @@ const useStyles = makeStyles((theme) => ({
   },
   cardActions: {
     // justifyContent: "flex-end",
+    display: "flex",
+    justifyContent: "space-between",
   },
-  fab: {
-    bottom: 70,
-    right: 20,
-    margin: 0,
-    top: "auto",
-    left: "auto",
-    position: "fixed",
+  cardActionsLeft: {
+    display: "flex",
+    gap: theme.spacing(1),
+    // "& > *": {
+    //   margin: theme.spacing(0, 4),
+    // },
   },
+
   root: {
     minWidth: 275,
   },
@@ -98,7 +110,68 @@ const useStyles = makeStyles((theme) => ({
   chipGroup: {
     marginTop: theme.spacing(1),
   },
+  modal: {
+    position: "absolute",
+    width: 360,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(1, 4, 2),
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
+  modalActions: {
+    justifyContent: "center",
+  },
 }));
+
+// const ModalBody: React.FC<{ id: string; handleClose: () => void }> = ({
+//   id,
+//   handleClose,
+// }) => {
+const ModalBody = React.forwardRef(
+  ({ id, handleClose }: { id: string; handleClose: () => void }, ref) => {
+    const classes = useStyles();
+
+    async function handleDelete(id: string) {
+      try {
+        const toDelete = await DataStore.query(Problem, id);
+        if (toDelete) {
+          await DataStore.delete(toDelete);
+          console.log("Problem deleted!");
+          handleClose();
+        } else {
+          throw new Error("Unable to find problem to delete.");
+        }
+      } catch (err) {
+        console.log("Error during deletion:", err);
+      }
+    }
+
+    return (
+      <div className={classes.modal}>
+        <h2 id="simple-modal-title">Delete Problem?</h2>
+        <p id="simple-modal-description">
+          Do you really want to delete all your hard work?
+        </p>
+        <CardActions className={classes.modalActions}>
+          <Button size="medium" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button
+            size="medium"
+            variant="contained"
+            color="primary"
+            onClick={() => handleDelete(id)}
+            disableElevation
+          >
+            Delete
+          </Button>
+        </CardActions>
+      </div>
+    );
+  }
+);
 
 const DifficultyBadge: React.FC<{ difficulty: Difficulty }> = ({
   difficulty,
@@ -117,64 +190,115 @@ const DifficultyBadge: React.FC<{ difficulty: Difficulty }> = ({
   }
 };
 
-export const ListItem: React.FC<{ data: Problem }> = ({ data }) => {
+export const ListItem: React.FC<{ data: Problem; user: any }> = ({
+  data,
+  user,
+}) => {
   const classes = useStyles();
   const history = useHistory();
+  const [open, setOpen] = React.useState(false);
+  const modalRef = React.useRef(null);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <Grid item key={data.id} xs={12} md={6}>
-      <Card className={classes.data}>
-        <CardContent className={classes.cardContent}>
-          <div className={classes.cardHeader}>
-            <Typography variant="h5" component="h2">
-              {data.title}
-            </Typography>
-            <DifficultyBadge difficulty={data.difficulty} />
-          </div>
-          <div className={classes.cardCenter}>
-            <div>
-              <Typography variant="overline" display="block">
+    <>
+      <Grid item key={data.id} xs={12} md={6}>
+        <Card className={classes.data}>
+          <CardContent className={classes.cardContent}>
+            <div className={classes.cardHeader}>
+              <Typography variant="h5" component="h2">
+                {data.title}
+              </Typography>
+              <DifficultyBadge difficulty={data.difficulty} />
+            </div>
+            <div className={classes.cardCenter}>
+              <div>
+                {/* <Typography variant="overline" display="block">
                 {data.url}
-              </Typography>
-              <Typography variant="overline" display="block">
-                {data.timestamp}
-              </Typography>
-              <Typography variant="overline" display="block">
-                {data.duration}
-              </Typography>
-            </div>
-            <div className={classes.chipGroup}>
-              <div className={classes.chips}>
-                {data.algorithms.map((algo, i) => {
-                  return <Chip label={algo} key={i} color="primary" />;
-                })}
+              </Typography> */}
+                <Typography variant="overline" display="block">
+                  {formatDistanceToNow(data.timestamp)} ago
+                </Typography>
+                <Typography variant="overline" display="block">
+                  {data.duration} minutes
+                </Typography>
               </div>
-              <div className={classes.chips}>
-                {data.dataStructures.map((ds, i) => {
-                  return <Chip label={ds} key={i} color="secondary" />;
-                })}
+              <div className={classes.chipGroup}>
+                <div className={classes.chips}>
+                  {data.algorithms.map((algo, i) => {
+                    return (
+                      <Chip
+                        label={formatChipText(algo)}
+                        key={i}
+                        color="primary"
+                      />
+                    );
+                  })}
+                </div>
+                <div className={classes.chips}>
+                  {data.dataStructures.map((ds, i) => {
+                    return (
+                      <Chip
+                        label={formatChipText(ds)}
+                        key={i}
+                        color="secondary"
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-        <CardActions className={classes.cardActions}>
-          <Button
-            size="small"
-            variant="contained"
-            color="primary"
-            disableElevation
-          >
-            View
-          </Button>
-          <Button
-            size="small"
-            color="primary"
-            onClick={() => history.push(`/form/${data.id}`)}
-          >
-            Edit
-          </Button>
-        </CardActions>
-      </Card>
-    </Grid>
+          </CardContent>
+          <CardActions className={classes.cardActions}>
+            <div className={classes.cardActionsLeft}>
+              <Button
+                // size="small"
+                variant="contained"
+                color="primary"
+                disableElevation
+              >
+                View
+              </Button>
+              {user && (
+                <Button
+                  // size="small"
+                  // color="primary"
+                  onClick={() => history.push(`/form/${data.id}`)}
+                >
+                  Edit
+                </Button>
+              )}
+            </div>
+            <div>
+              {user && (
+                <IconButton
+                  aria-label="delete"
+                  // size="small"
+                  // onClick={() => handleDelete(data.id)}
+                  onClick={handleOpen}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </div>
+          </CardActions>
+        </Card>
+      </Grid>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <ModalBody id={data.id} handleClose={handleClose} ref={modalRef} />
+      </Modal>
+    </>
   );
 };

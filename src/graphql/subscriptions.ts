@@ -3,8 +3,8 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreateProblem = /* GraphQL */ `
-  subscription OnCreateProblem($owner: String!) {
-    onCreateProblem(owner: $owner) {
+  subscription OnCreateProblem {
+    onCreateProblem {
       id
       title
       url
@@ -20,13 +20,12 @@ export const onCreateProblem = /* GraphQL */ `
       _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
 export const onUpdateProblem = /* GraphQL */ `
-  subscription OnUpdateProblem($owner: String!) {
-    onUpdateProblem(owner: $owner) {
+  subscription OnUpdateProblem {
+    onUpdateProblem {
       id
       title
       url
@@ -42,13 +41,12 @@ export const onUpdateProblem = /* GraphQL */ `
       _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;
 export const onDeleteProblem = /* GraphQL */ `
-  subscription OnDeleteProblem($owner: String!) {
-    onDeleteProblem(owner: $owner) {
+  subscription OnDeleteProblem {
+    onDeleteProblem {
       id
       title
       url
@@ -64,7 +62,6 @@ export const onDeleteProblem = /* GraphQL */ `
       _lastChangedAt
       createdAt
       updatedAt
-      owner
     }
   }
 `;

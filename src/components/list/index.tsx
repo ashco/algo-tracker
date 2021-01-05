@@ -16,7 +16,7 @@ import { ListItem } from "./ListItem";
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
     // paddingTop: theme.spacing(12),
-    paddingBottom: theme.spacing(10),
+    paddingBottom: theme.spacing(18),
     // [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
     //   marginTop: theme.spacing(6),
     //   marginBottom: theme.spacing(6),
@@ -33,57 +33,77 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+async function listProblems(
+  setProblems: React.Dispatch<React.SetStateAction<Problem[]>>
+) {
+  try {
+    const problems = await DataStore.query(Problem);
+    setProblems(problems);
+    console.log("Queried list of problems:", problems);
+  } catch (err) {
+    console.log("Error retrieving problems", err);
+  }
+}
+
+async function changeSync() {
+  await DataStore.clear();
+  await DataStore.start();
+}
+
 const List: React.FC<{ user: any }> = ({ user }) => {
   const classes = useStyles();
   const history = useHistory();
   const [problems, setProblems] = React.useState<Problem[]>([]);
 
   React.useEffect(() => {
-    async function getProblems() {
-      try {
-        const theItems = await DataStore.query(Problem);
-        setProblems(theItems);
-        console.log("Posts retrieved successfully.", theItems);
-      } catch (err) {
-        console.log("Error retrieving problems", err);
-      }
-    }
+    listProblems(setProblems);
 
-    getProblems();
-    // console.log(problems);
-    // // @ts-ignore
-    // const subscription = API.graphql(graphqlOperation(onUpdateProblem)).subscribe({
-    //   next: (res: SubscriptionValue<OnCreateTodoSubscription>) => {
-    //     const problems = mapOnCreateTodoSubscription(res.value.data);
-    //     console.log(todo);
-    //     setProblems([...todos, todo]);
-    //   },
-    // });
-    // const subscription = API.graphql(
-    //   graphqlOperation(onUpdateProblem)
-    // ).subscribe({
-    //   next: (res: ) => {
-    //     console.log("data: ", data);
-    //   },
-    // });
-    // return () => subscription.unsubscribe();
+    const subscription = DataStore.observe(Problem).subscribe((msg) => {
+      console.log(msg.model, msg.opType, msg.element);
+      listProblems(setProblems);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
-  // DataStore.clear();
+  // React.useEffect(() => {
+  //   const subscription = DataStore.observe(Problem).subscribe((msg) => {
+  //     console.log(msg.model, msg.opType, msg.element);
+  //   });
+
+  //   return () => subscription.unsubscribe();
+  // }, []);
+
+  // React.useEffect(() => {
+  //   async function getProblems() {
+  //     try {
+  //       const theItems = await DataStore.query(Problem);
+  //       setProblems(theItems);
+  //       console.log("Posts retrieved successfully.", theItems);
+  //     } catch (err) {
+  //       console.log("Error retrieving problems", err);
+  //     }
+  //   }
+
+  //   getProblems();
+  // }, []);
+
   return (
     <Container className={classes.cardGrid} maxWidth="md">
       <Grid container spacing={4}>
         {problems.map((data) => {
-          return <ListItem data={data} key={data.id} />;
+          return <ListItem data={data} key={data.id} user={user} />;
         })}
       </Grid>
-      <Fab
-        color="secondary"
-        aria-label="add"
-        className={classes.fab}
-        onClick={() => history.push("/form")}
-      >
-        <AddIcon />
-      </Fab>
+      {user && (
+        <Fab
+          color="secondary"
+          aria-label="add"
+          className={classes.fab}
+          onClick={() => history.push("/form")}
+        >
+          <AddIcon />
+        </Fab>
+      )}
     </Container>
   );
 };

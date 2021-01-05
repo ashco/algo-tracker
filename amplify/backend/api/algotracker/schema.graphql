@@ -30,7 +30,14 @@ enum DataStructure {
   GRAPH
 }
 
-type Problem @model @auth(rules: [{ allow: owner }]) {
+type Problem
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groups: ["Admin"] }
+      { allow: public, operations: [read] }
+    ]
+  ) {
   id: ID!
   title: String!
   url: AWSURL!

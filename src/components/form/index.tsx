@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useForm, Controller, useController } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -24,7 +24,7 @@ import { DataStore } from "aws-amplify";
 import { Problem } from "../../models";
 import { CreateProblemInput } from "../../API";
 
-import { EnumReflection } from "../../lib/EnumReflection";
+import { formatChipText } from "../../lib/helpers";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
       // marginTop: theme.spacing(6),
       marginBottom: theme.spacing(6),
-      padding: theme.spacing(3),
+      padding: theme.spacing(4),
     },
   },
   stepper: {
@@ -57,9 +57,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     width: "100%",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
+    gap: theme.spacing(1),
   },
   button: {
     marginTop: theme.spacing(3),
@@ -68,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
   cardGrid: {
     // paddingTop: theme.spacing(4),
     // paddingBottom: theme.spacing(10),
+    // padding: theme.spacing(2),
   },
   formControl: {
     // margin: theme.spacing(1),
@@ -191,7 +190,6 @@ export default function AddressForm() {
   const {
     register,
     handleSubmit,
-    watch,
     reset,
     control,
   } = useForm<CreateProblemInput>({ defaultValues });
@@ -204,32 +202,56 @@ export default function AddressForm() {
     try {
       if (status === Status.EDIT) {
         const id = params?.id;
-        if (id) {
-          const original = await DataStore.query(Problem, id);
 
-          if (original) {
-            console.log("Updating original");
-            // return history.push("/list");
-            // await DataStore.save(
-            //   Problem.copyOf(original, (updated) => {
-            //     // console.log(original);
-            //     for (let key of Object.keys(original)) {
-            //       // // @ts-ignore
-            //       // updated[key] = data[key];
-            //     }
-            //     // console.log(updated);
-            //     // updated.title = `title ${Date.now()}`;
-            //   })
-            // );
-            return;
-            // await DataStore.save(
-            // );
-          }
+        if (id) {
+          DataStore.query(Problem, id)
+            .then((original) => {
+              if (!original) throw new Error("Problem not found!");
+
+              const copyOf = Problem.copyOf(original, (draft) => {
+                draft.title = original.title;
+                draft.url = original.url;
+                draft.replUrl = original.replUrl;
+                draft.notes = original.notes;
+                draft.difficulty = original.difficulty;
+                draft.duration = original.duration;
+                draft.timestamp = original.timestamp;
+                draft.algorithms = original.algorithms;
+                draft.dataStructures = original.dataStructures;
+              });
+              console.log("copyOf", copyOf);
+              return DataStore.save(copyOf);
+            })
+            .then((res) => console.log(res))
+            .catch((err) => console.log("Error updating problem", err));
         }
+        // if (id) {
+        //   const original = await DataStore.query(Problem, id);
+
+        //   if (original) {
+        //     console.log("Updating original");
+        //     await DataStore.save(
+        //       Problem.copyOf(original, (updated) => {
+        //         // console.log(updated);
+        //         // for (let key of Object.keys(original)) {
+        //         //   // @ts-ignore
+        //         //   updated[key] = original[key];
+        //         //   console.log(key);
+        //         // }
+        //         // console.log(updated);
+        //       })
+        //     );
+        //     // return history.push("/list");
+        //   }
+      } else if (status === Status.NEW) {
+        // const problem = new Problem(data);
+        await DataStore.save(new Problem(data));
+        console.log("New problem saved.");
+        history.push("/list");
       }
 
-      await DataStore.save(new Problem(data));
-      history.push("/list");
+      // await DataStore.save(new Problem(data));
+      // history.push("/list");
 
       // let problem = new Problem(data);
 
@@ -244,7 +266,7 @@ export default function AddressForm() {
       //   ? new Problem(data)
       //   : Post.copyOf(original, (updated) => updated.title = `title ${Date.now()}`)
 
-      console.log("Post saved!");
+      // console.log("Post saved!");
     } catch (err) {
       console.log("Error saving post", err);
     }
@@ -259,8 +281,10 @@ export default function AddressForm() {
       if (id) {
         console.log("loading data");
         const data = await DataStore.query(Problem, id);
-        reset(data);
-        setStatus(Status.EDIT);
+        if (data) {
+          reset(data as any);
+          setStatus(Status.EDIT);
+        }
       }
     }
 
@@ -360,7 +384,7 @@ export default function AddressForm() {
                               <Chip
                                 key={i}
                                 clickable
-                                label={algo}
+                                label={formatChipText(algo)}
                                 color={
                                   value.includes(algo) ? "primary" : "default"
                                 }
@@ -396,7 +420,7 @@ export default function AddressForm() {
                             <Chip
                               key={i}
                               clickable
-                              label={ds}
+                              label={formatChipText(ds)}
                               color={
                                 value.includes(ds) ? "secondary" : "default"
                               }
@@ -441,15 +465,20 @@ export default function AddressForm() {
                 />
               </Grid>
 
-              <div className={classes.buttons}>
+              <Grid item xs={12} className={classes.buttons}>
                 {/* <Button color="primary" variant="outlined" disableElevation>
                 Start
               </Button> */}
                 <Button onClick={() => history.push("/list")}>Cancel</Button>
-                <Button color="primary" variant="contained" type="submit">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                  type="submit"
+                >
                   {status === Status.NEW ? "Complete" : "Update"}
                 </Button>
-              </div>
+              </Grid>
             </Grid>
           </form>
         </Paper>

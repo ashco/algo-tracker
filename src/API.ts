@@ -211,7 +211,6 @@ export type CreateProblemMutation = {
     _lastChangedAt: number,
     createdAt: string,
     updatedAt: string,
-    owner: string | null,
   } | null,
 };
 
@@ -238,7 +237,6 @@ export type UpdateProblemMutation = {
     _lastChangedAt: number,
     createdAt: string,
     updatedAt: string,
-    owner: string | null,
   } | null,
 };
 
@@ -265,7 +263,63 @@ export type DeleteProblemMutation = {
     _lastChangedAt: number,
     createdAt: string,
     updatedAt: string,
-    owner: string | null,
+  } | null,
+};
+
+export type GetProblemQueryVariables = {
+  id: string,
+};
+
+export type GetProblemQuery = {
+  getProblem:  {
+    __typename: "Problem",
+    id: string,
+    title: string,
+    url: string,
+    replUrl: string,
+    notes: string,
+    difficulty: Difficulty,
+    duration: string,
+    timestamp: number,
+    algorithms: Array< Algorithm >,
+    dataStructures: Array< DataStructure >,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListProblemsQueryVariables = {
+  filter?: ModelProblemFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListProblemsQuery = {
+  listProblems:  {
+    __typename: "ModelProblemConnection",
+    items:  Array< {
+      __typename: "Problem",
+      id: string,
+      title: string,
+      url: string,
+      replUrl: string,
+      notes: string,
+      difficulty: Difficulty,
+      duration: string,
+      timestamp: number,
+      algorithms: Array< Algorithm >,
+      dataStructures: Array< DataStructure >,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
+      createdAt: string,
+      updatedAt: string,
+    } | null > | null,
+    nextToken: string | null,
+    startedAt: number | null,
   } | null,
 };
 
@@ -296,74 +350,10 @@ export type SyncProblemsQuery = {
       _lastChangedAt: number,
       createdAt: string,
       updatedAt: string,
-      owner: string | null,
     } | null > | null,
     nextToken: string | null,
     startedAt: number | null,
   } | null,
-};
-
-export type GetProblemQueryVariables = {
-  id: string,
-};
-
-export type GetProblemQuery = {
-  getProblem:  {
-    __typename: "Problem",
-    id: string,
-    title: string,
-    url: string,
-    replUrl: string,
-    notes: string,
-    difficulty: Difficulty,
-    duration: string,
-    timestamp: number,
-    algorithms: Array< Algorithm >,
-    dataStructures: Array< DataStructure >,
-    _version: number,
-    _deleted: boolean | null,
-    _lastChangedAt: number,
-    createdAt: string,
-    updatedAt: string,
-    owner: string | null,
-  } | null,
-};
-
-export type ListProblemsQueryVariables = {
-  filter?: ModelProblemFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListProblemsQuery = {
-  listProblems:  {
-    __typename: "ModelProblemConnection",
-    items:  Array< {
-      __typename: "Problem",
-      id: string,
-      title: string,
-      url: string,
-      replUrl: string,
-      notes: string,
-      difficulty: Difficulty,
-      duration: string,
-      timestamp: number,
-      algorithms: Array< Algorithm >,
-      dataStructures: Array< DataStructure >,
-      _version: number,
-      _deleted: boolean | null,
-      _lastChangedAt: number,
-      createdAt: string,
-      updatedAt: string,
-      owner: string | null,
-    } | null > | null,
-    nextToken: string | null,
-    startedAt: number | null,
-  } | null,
-};
-
-export type OnCreateProblemSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnCreateProblemSubscription = {
@@ -384,12 +374,7 @@ export type OnCreateProblemSubscription = {
     _lastChangedAt: number,
     createdAt: string,
     updatedAt: string,
-    owner: string | null,
   } | null,
-};
-
-export type OnUpdateProblemSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnUpdateProblemSubscription = {
@@ -410,12 +395,7 @@ export type OnUpdateProblemSubscription = {
     _lastChangedAt: number,
     createdAt: string,
     updatedAt: string,
-    owner: string | null,
   } | null,
-};
-
-export type OnDeleteProblemSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnDeleteProblemSubscription = {
@@ -436,6 +416,5 @@ export type OnDeleteProblemSubscription = {
     _lastChangedAt: number,
     createdAt: string,
     updatedAt: string,
-    owner: string | null,
   } | null,
 };

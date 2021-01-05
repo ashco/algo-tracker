@@ -21,22 +21,18 @@ import withAlerts from "../../context/withAlerts";
 import { AlertContext } from "../../context/withAlerts";
 
 import Home from "../home";
-import Paper from "@material-ui/core/Paper";
-// import AuthForm from "../auth";
-import Analytics from "../analytics";
-import List from "../list";
 import Form from "../form";
-// import "./App.css";
+// import AuthForm from "../auth";
+import List from "../list";
+import Analytics from "../analytics";
 import SignIn from "../auth/signIn";
 import SignUp from "../auth/signUp";
 import ConfirmSignUp from "../auth/confirmSignUp";
 import ForgotPassword from "../auth/forgotPassword";
 import ForgotPasswordSubmit from "../auth/forgotPasswordSubmit";
+// import "./App.css";
 
 import { Meta } from "../meta";
-
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
 
 Amplify.configure(awsexports);
 
@@ -48,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   bottomNav: {
     bottom: 0,
-    position: "sticky",
+    position: "absolute",
     width: "100vw",
   },
   title: {
@@ -71,10 +67,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+async function updateUser(setUser: React.Dispatch<any>) {
+  try {
+    const user = await Auth.currentAuthenticatedUser();
+    setUser(user);
+  } catch (err) {
+    setUser(null);
+  }
+}
+
 function App() {
   const triggerAlert = React.useContext(AlertContext);
 
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = React.useState<any>(null);
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -92,23 +97,14 @@ function App() {
   const [navVal, setNavVal] = React.useState<null | 0 | 1>(null);
 
   React.useEffect(() => {
-    async function updateUser() {
-      try {
-        const user = await Auth.currentAuthenticatedUser();
-        setUser(user);
-      } catch (err) {
-        setUser(null);
-      }
-    }
+    updateUser(setUser);
 
-    updateUser();
-
-    Hub.listen("auth", updateUser);
-    return () => Hub.remove("auth", updateUser);
+    Hub.listen("auth", () => updateUser(setUser));
+    return () => Hub.remove("auth", () => updateUser(setUser));
   }, []);
 
   React.useEffect(() => {
-    if (location.pathname === "/history") {
+    if (location.pathname === "/list") {
       setNavVal(0);
     } else if (location.pathname === "/analytics") {
       setNavVal(1);
@@ -149,7 +145,6 @@ function App() {
             <Form />
           </Route>
           <Route exact path="/analytics" component={Analytics} />
-          {/* Auth */}
           <Route exact path="/sign-in" component={SignIn} />
           <Route exact path="/sign-up" component={SignUp} />
           <Route exact path="/confirm-sign-up" component={ConfirmSignUp} />
