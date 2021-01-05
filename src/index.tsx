@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Link, useHistory } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import {
-  createMuiTheme,
+  unstable_createMuiStrictModeTheme as createMuiTheme,
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core/styles";
-import { blueGrey, orange } from "@material-ui/core/colors";
+import { blueGrey, teal } from "@material-ui/core/colors";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import App from "./components/app";
 import reportWebVitals from "./reportWebVitals";
@@ -15,8 +16,9 @@ import "fontsource-roboto";
 
 const theme = createMuiTheme({
   palette: {
+    type: "dark",
     primary: blueGrey,
-    secondary: orange,
+    secondary: teal,
   },
 });
 
@@ -24,8 +26,10 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
+        <HelmetProvider>
+          <CssBaseline />
+          <App />
+        </HelmetProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,

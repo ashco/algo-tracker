@@ -49,13 +49,13 @@ const ForgotPasswordSubmit: React.FC = () => {
   const history = useHistory();
   const triggerAlert = React.useContext(AlertContext);
 
-  const { register, handleSubmit, watch, errors } = useForm<Form>();
+  const { register, handleSubmit } = useForm<Form>();
 
   async function forgotPasswordSubmit(data: Form) {
     try {
       await Auth.forgotPasswordSubmit(data.username, data.code, data.password);
       /* Once the user successfully confirms their account, update form state to show the sign in form */
-      history.push("/history");
+      history.push("/list");
     } catch (err) {
       triggerAlert(err.log || err.message);
     }

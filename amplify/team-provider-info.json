@@ -31,4 +31,30 @@
             }
         }
     }
+<<<<<<< HEAD
+=======
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-algotracker-prod-122019-authRole",
+      "UnauthRoleArn": "arn:aws:iam::105465043081:role/amplify-algotracker-prod-122019-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::105465043081:role/amplify-algotracker-prod-122019-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-algotracker-prod-122019-deployment",
+      "UnauthRoleName": "amplify-algotracker-prod-122019-unauthRole",
+      "StackName": "amplify-algotracker-prod-122019",
+      "StackId": "arn:aws:cloudformation:us-west-2:105465043081:stack/amplify-algotracker-prod-122019/72ca7fe0-4625-11eb-9ff4-06e047120066",
+      "AmplifyAppId": "d26webzsk9f9ch"
+    },
+    "categories": {
+      "auth": {
+        "algotracker85b930e8": {}
+      },
+      "function": {
+        "algotracker85b930e8PostConfirmation": {},
+        "algotracker85b930e8PreSignup": {}
+      }
+    }
+  }
+>>>>>>> feature
 }

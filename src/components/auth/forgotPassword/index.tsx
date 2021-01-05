@@ -47,7 +47,7 @@ const ForgotPassword: React.FC = () => {
   const history = useHistory();
   const triggerAlert = React.useContext(AlertContext);
 
-  const { register, handleSubmit, watch, errors } = useForm<Form>();
+  const { register, handleSubmit } = useForm<Form>();
 
   async function forgotPassword(data: Form) {
     try {

@@ -1,0 +1,54 @@
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Algorithm {
+  DYNAMIC_PROGRAMMING
+  POINTERS
+  BINARY_SEARCH
+  DFS
+  BFS
+  QUICK_SORT
+  MERGE_SORT
+  RECURSION
+  GREEDY_METHOD
+}
+
+enum DataStructure {
+  ARRAY
+  STRING
+  LINKED_LIST
+  STACK
+  QUEUE
+  HASH_TABLE
+  BINARY_TREE
+  BINARY_SEARCH_TREE
+  TRIE
+  HEAP
+  GRAPH
+}
+
+type Problem
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groups: ["Admin"] }
+      { allow: public, operations: [read] }
+    ]
+  ) {
+  id: ID!
+  title: String!
+  url: AWSURL!
+  replUrl: String!
+  notes: String!
+
+  difficulty: Difficulty!
+  duration: String!
+  timestamp: AWSTimestamp!
+  # date: AWSDate!
+  # time: AWSTime!
+  algorithms: [Algorithm!]!
+  dataStructures: [DataStructure!]!
+}

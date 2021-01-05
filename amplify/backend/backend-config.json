@@ -38,11 +38,37 @@
       "customAuth": false
     }
   },
+<<<<<<< HEAD
   "hosting": {
     "amplifyhosting": {
       "service": "amplifyhosting",
       "type": "cicd",
       "lastPushTimeStamp": "2020-12-24T20:09:26.534Z"
+=======
+  "api": {
+    "algotracker": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authalgotracker85b930e8"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "API_KEY",
+              "apiKeyConfig": {
+                "apiKeyExpirationDays": 365,
+                "description": "web"
+              }
+            }
+          ]
+        }
+      }
+>>>>>>> feature
     }
   }
 }
