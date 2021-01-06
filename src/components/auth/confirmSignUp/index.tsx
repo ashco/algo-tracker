@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignIn: React.FC = () => {
+const ConfirmSignUp: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const triggerAlert = React.useContext(AlertContext);
@@ -123,4 +123,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default ConfirmSignUp;

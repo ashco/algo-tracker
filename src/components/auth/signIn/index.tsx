@@ -19,7 +19,7 @@ import Container from "@material-ui/core/Container";
 import { AlertContext } from "../../../context/withAlerts";
 import Copyright from "../copyright";
 
-import { Auth } from "aws-amplify";
+import { Auth, Amplify } from "aws-amplify";
 
 interface Form {
   username: string;
@@ -56,6 +56,9 @@ const SignIn: React.FC = () => {
   async function signIn(data: Form) {
     try {
       await Auth.signIn(data.username, data.password);
+      Amplify.configure({
+        aws_appsync_authenticationType: "AMAZON_COGNITO_USER_POOLS",
+      });
       /* Once the user successfully signs in, update the form state to show the signed in state */
       history.push("/list");
     } catch (err) {

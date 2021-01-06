@@ -1,46 +1,28 @@
-# Getting Started with Create React App
+# AshCo's Algo App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This application acts as a way for me to track statistics related to the algorithm challenges I attempt. As I collect data, I will upgrade the application to better visualize it and identify trends.
 
-## Available Scripts
+## How to use this app
 
-In the project directory, you can run:
+Posted data is publically available to all. You can view individual data posts via the list tab as well as the visualized data via the analytics tab.
 
-### `yarn start`
+Please note that only users with an `@ashco.io` email domain can sign up and will automatically be added to the Admin group. Only Admins have access to Create, Update, and Delete operations.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Tech Stack
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Frontend
 
-### `yarn test`
+- React - Bootstrapped with Create React App
+- TypeScript - Types make life better.
+- Material UI - A UI framework to quickly build applications based off of Google's Material Design.
+- React Hook Form - An easier way to handle form fields in React.
+- React Router - Routing for React.
+- AWS Amplify Datastore - Database option that interacts with backend AWS AppSync service. Enables realtime data sync + updates.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Backend
 
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- AWS Amplify - All you need to create a serverless backend for your app.
+  - GraphQL API via AppSync - Uses DynamoDB as data source.
+  - Cognito - A way to handle user authentication and authorization.
+  - Lambda Functions - Triggered to ensure only whitelisted domain emails addresses can sign up. Also adds new users to Admin group.
+  - CI/CD - App is hosted via AWS through a Continuous Integration work flow.

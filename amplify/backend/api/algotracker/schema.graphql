@@ -32,10 +32,15 @@ enum DataStructure {
 
 type Problem
   @model
+  @aws_iam
+  @aws_cognito_user_pools
   @auth(
     rules: [
       { allow: groups, groups: ["Admin"] }
-      { allow: public, operations: [read] }
+      # add this so that unauthenticated users can read
+      { allow: public, provider: iam, operations: [read] }
+      # add this so that authenticated users can read
+      # { allow: groups, groups: ["Everyone"], operations: [read] }
     ]
   ) {
   id: ID!

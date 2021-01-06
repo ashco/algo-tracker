@@ -34,6 +34,9 @@ import ForgotPasswordSubmit from "../auth/forgotPasswordSubmit";
 
 import { Meta } from "../meta";
 
+// const ampConfig = awsexports;
+// ampConfig.aws_appsync_authenticationType = isSignedIn ? "AMAZON_COGNITO_USER_POOLS" : ""
+
 Amplify.configure(awsexports);
 
 const useStyles = makeStyles((theme) => ({
@@ -68,11 +71,36 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function updateUser(setUser: React.Dispatch<any>) {
+  console.log("looping?");
   try {
     const user = await Auth.currentAuthenticatedUser();
     setUser(user);
+    // Amplify.configure({
+    //   aws_appsync_authenticationType: "AMAZON_COGNITO_USER_POOLS",
+    // });
+
+    console.log(user);
   } catch (err) {
     setUser(null);
+    // Amplify.configure({
+    //   aws_appsync_authenticationType: "AWS_IAM",
+    // });
+  }
+}
+
+async function signOut(
+  setUser: React.Dispatch<any>,
+  triggerAlert: (text: string) => void
+) {
+  try {
+    await Auth.signOut();
+    setUser(null);
+    Amplify.configure({
+      aws_appsync_authenticationType: "AWS_IAM",
+    });
+  } catch (err) {
+    triggerAlert(err.log || err.message);
+    console.log("error signing out: ", err);
   }
 }
 
@@ -84,22 +112,30 @@ function App() {
   const history = useHistory();
   const location = useLocation();
 
-  async function signOut() {
-    try {
-      await Auth.signOut();
-      setUser(null);
-    } catch (err) {
-      triggerAlert(err.log || err.message);
-      console.log("error signing out: ", err);
-    }
-  }
-
   const [navVal, setNavVal] = React.useState<null | 0 | 1>(null);
+
+  // React.useEffect(() => {
+  //   console.log("TRIGGER");
+  //   Amplify.configure({
+  //     aws_appsync_authenticationType: user
+  //       ? "AMAZON_COGNITO_USER_POOLS"
+  //       : "AWS_IAM",
+  //   });
+  // }, [user]);
 
   React.useEffect(() => {
     updateUser(setUser);
 
-    Hub.listen("auth", () => updateUser(setUser));
+    if (user === null) {
+      Amplify.configure({
+        aws_appsync_authenticationType: "AWS_IAM",
+      });
+    }
+
+    Hub.listen("auth", (data) => {
+      console.log(data);
+      updateUser(setUser);
+    });
     return () => Hub.remove("auth", () => updateUser(setUser));
   }, []);
 
@@ -126,7 +162,10 @@ function App() {
               Admin
             </Button>
           ) : (
-            <Button color="inherit" onClick={signOut}>
+            <Button
+              color="inherit"
+              onClick={() => signOut(setUser, triggerAlert)}
+            >
               Sign Out
             </Button>
           )}

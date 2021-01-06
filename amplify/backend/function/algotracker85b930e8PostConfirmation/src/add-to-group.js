@@ -5,39 +5,39 @@ exports.handler = async (event, context, callback) => {
     { apiVersion: "2016-04-18" }
   );
 
-  let adminEmails = ["ash@ashco.io"],
-    isAdmin = false;
+  // let adminEmails = ["ash@ashco.io"],
+  //   isAdmin = false;
 
-  if (adminEmails.indexOf(event.request.userAttributes.email) !== -1) {
-    isAdmin = true;
+  // if (adminEmails.indexOf(event.request.userAttributes.email) !== -1) {
+  //   isAdmin = true;
+  // }
+
+  // if (isAdmin) {
+  const groupParams = {
+    GroupName: process.env.GROUP,
+    UserPoolId: event.userPoolId,
+  };
+
+  const addUserParams = {
+    ...groupParams,
+    Username: event.userName,
+  };
+
+  try {
+    await cognitoidentityserviceprovider.getGroup(groupParams).promise();
+  } catch (e) {
+    await cognitoidentityserviceprovider.createGroup(groupParams).promise();
   }
 
-  if (isAdmin) {
-    const groupParams = {
-      GroupName: process.env.GROUP,
-      UserPoolId: event.userPoolId,
-    };
-
-    const addUserParams = {
-      ...groupParams,
-      Username: event.userName,
-    };
-
-    try {
-      await cognitoidentityserviceprovider.getGroup(groupParams).promise();
-    } catch (e) {
-      await cognitoidentityserviceprovider.createGroup(groupParams).promise();
-    }
-
-    try {
-      await cognitoidentityserviceprovider
-        .adminAddUserToGroup(addUserParams)
-        .promise();
-      callback(null, event);
-    } catch (e) {
-      callback(e);
-    }
-  } else {
+  try {
+    await cognitoidentityserviceprovider
+      .adminAddUserToGroup(addUserParams)
+      .promise();
     callback(null, event);
+  } catch (e) {
+    callback(e);
   }
+  // } else {
+  //   callback(null, event);
+  // }
 };

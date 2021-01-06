@@ -15,13 +15,7 @@ import { ListItem } from "./ListItem";
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
-    // paddingTop: theme.spacing(12),
     paddingBottom: theme.spacing(18),
-    // [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
-    //   marginTop: theme.spacing(6),
-    //   marginBottom: theme.spacing(6),
-    //   padding: theme.spacing(3),
-    // },
   },
   fab: {
     bottom: 70,
@@ -45,10 +39,10 @@ async function listProblems(
   }
 }
 
-async function changeSync() {
-  await DataStore.clear();
-  await DataStore.start();
-}
+// async function changeSync() {
+//   await DataStore.clear();
+//   await DataStore.start();
+// }
 
 const List: React.FC<{ user: any }> = ({ user }) => {
   const classes = useStyles();
@@ -65,27 +59,6 @@ const List: React.FC<{ user: any }> = ({ user }) => {
 
     return () => subscription.unsubscribe();
   }, []);
-  // React.useEffect(() => {
-  //   const subscription = DataStore.observe(Problem).subscribe((msg) => {
-  //     console.log(msg.model, msg.opType, msg.element);
-  //   });
-
-  //   return () => subscription.unsubscribe();
-  // }, []);
-
-  // React.useEffect(() => {
-  //   async function getProblems() {
-  //     try {
-  //       const theItems = await DataStore.query(Problem);
-  //       setProblems(theItems);
-  //       console.log("Posts retrieved successfully.", theItems);
-  //     } catch (err) {
-  //       console.log("Error retrieving problems", err);
-  //     }
-  //   }
-
-  //   getProblems();
-  // }, []);
 
   return (
     <Container className={classes.cardGrid} maxWidth="md">

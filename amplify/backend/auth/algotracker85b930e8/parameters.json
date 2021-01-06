@@ -1,6 +1,6 @@
 {
     "identityPoolName": "algotracker85b930e8_identitypool_85b930e8",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "algotr85b930e8",
     "userPoolName": "algotracker85b930e8_userpool_85b930e8",
     "autoVerifiedAttributes": [
@@ -21,7 +21,7 @@
         "email"
     ],
     "userpoolClientGenerateSecret": true,
-    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientRefreshTokenValidity": "365",
     "userpoolClientWriteAttributes": [
         "email"
     ],
@@ -45,9 +45,12 @@
             "Arn"
         ]
     },
-    "useDefault": "default",
+    "useDefault": "manual",
     "triggers": "{\n  \"PostConfirmation\": [\n    \"add-to-group\"\n  ],\n  \"PreSignup\": [\n    \"email-filter-whitelist\"\n  ]\n}",
-    "userPoolGroupList": [],
+    "userPoolGroupList": [
+        "Admin",
+        "Everyone"
+    ],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
     "parentStack": {
@@ -75,5 +78,9 @@
                 "Name"
             ]
         }
-    ]
+    ],
+    "thirdPartyAuth": false,
+    "userPoolGroups": true,
+    "adminQueries": false,
+    "hostedUI": false
 }

@@ -7,11 +7,12 @@
   "functionName": "algotracker85b930e8PreSignup",
   "resourceName": "algotracker85b930e8PreSignup",
   "parentStack": "auth",
-  "triggerEnvs": [],
+  "triggerEnvs": "[]",
   "triggerDir": "/snapshot/node_modules/amplify-category-auth/provider-utils/awscloudformation/triggers/PreSignup",
   "triggerTemplate": "PreSignup.json.ejs",
   "roleName": "algotracker85b930e8PreSignup",
   "skipEdit": true,
   "DOMAINWHITELIST": "ashco.io",
-  "enableCors": false
+  "enableCors": false,
+  "triggerEventPath": "PreSignup.event.json"
 }
